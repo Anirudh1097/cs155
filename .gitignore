@@ -15,3 +15,8 @@
 *.exe
 *.out
 *.app
+
+
+# System generated files
+*.DS_Store
+*~
