@@ -20,3 +20,9 @@
 # System generated files
 *.DS_Store
 *~
+
+# Executables
+*target[0-9]
+*target-ec
+*sploit[0-9]
+*sploit-ec
