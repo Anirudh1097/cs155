@@ -26,3 +26,6 @@
 *target-ec
 *sploit[0-9]
 *sploit-ec
+
+*.tar.gz
+*submission
