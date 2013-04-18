@@ -9,7 +9,16 @@
 
 /* 
  * Main idea of exploit:
- *     
+ *     In this exploit we have a buffer big enough 
+ *     to hold our shellcode and we can only overwrite
+ *     the LSB of the saved ebp in the bar stack frame. 
+ *     The main idea is to change this byte so that the 
+ *     saved ebp now points to an address inside our buffer 
+ *     where the poisonous eip (address of shellcode) is*.
+ *     The prologue for bar will restore the ebp to this 
+ *     fake ebp and the prologue for foo will pop off our 
+ *     poisonous eip to the eip register. The shellcode 
+ *     then executes and badabing! we get root shell.
  */
 
 /* 
