@@ -7,6 +7,16 @@
 #define TARGET "/tmp/target1"
 #define EGG_SIZE 300 /* size of exploit string, enough to overrun the 256 buffer in target1.c:foo */ 
 
+/* 
+ * Main idea of exploit:
+ *     This is a plain vanilla buffer overflow exploit. 
+ *     We have a buffer sufficiently big to hold shellcode 
+ *     and there is no bounds checking on it. We inject 
+ *     the shellcode into the buffer and overwrite the return
+ *     address of the function with the address of the buffer
+ *     (starting point of shellcode).
+ */
+
 int main(void)
 {
   char *args[3];
