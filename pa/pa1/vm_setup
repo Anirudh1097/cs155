@@ -1,0 +1,72 @@
+VM Setup
+
+1. Expand Disk
+	- use gparted-live-0.14.1-6-i486.iso
+
+2. Install packages via apt-get install
+	- sudo
+	- emacs
+	- git
+	- .bash_profile
+	- fortune
+	- sshfs
+
+3. setup .ssh/config
+	[~]$ cat .ssh/config 
+	Host sophy
+    	    GSSAPIDelegateCredentials yes
+        	GSSAPIAuthentication yes
+	Hostname dn0a211407.sunet
+	User rmferrer
+
+4. Setup sshfs
+	su; apt-get install sshfs
+	su; usermod -G fuse <your-username>
+	su; adduser user fuse
+	su; emacs /etc/fuse.conf (uncomment line that says #user_allow_other and save)
+	reboot
+
+5. Create mount point
+	cd ~; mkdir cs155
+	
+
+
+
+
+Every time VM boots up:
+
+0. Boot up VM and ssh into it. 
+
+1. Enable ssh on MacOSX. Go to System Preferences -> Sharing. Turn on Remote Login for all users. 
+
+2. Mount MacOS filesystem onto VM
+	- mount fs onto mount point IN VM
+		IN VM:
+			cd ~; 
+			sshfs -o allow_other sophy:/Users/rmferrer/Dropbox/school/spr_12-13/cs155/assigns ~/cs155 -ocache=no;
+
+3. Set up targets:
+	su;
+	cd .../targets;
+	make clean && make;
+	make install; 
+	make setuid;
+	exit;
+
+4. Work, Test, Have Fun
+
+When done: 
+
+5. su; umount -f ~/cs155
+
+6. Disable/Turn off Remote Login/ssh in MacOSX.
+
+
+
+Resources & Troubleshooting: 
+- Resizing VM partitions: 
+	http://data.agaric.com/increase-main-partition-size-ubuntu-within-vmware-fusion
+	http://www.netzgewitter.com/2011/08/resizing-linux-partition/
+- Mounting FS with sshfs: http://fortysomethinggeek.blogspot.com/2012/11/sshfs-on-osx-mount-sshsftp-shares-on-mac.html
+- devfuse permission denied: http://www.elfnet.org/2010/06/29/sshfs-failed-to-open-devfuse-permission-denied/
+- adding users to sudoers: http://askubuntu.com/questions/7477/how-can-i-add-a-new-user-as-sudoer-using-the-command-line
