@@ -1,23 +1,19 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <!-- saved from url=(0053)http://crypto.stanford.edu/cs155/hw_and_proj/hw1.html -->
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
 <title>CS155 Computer and Network Security HW 1</title>
-
 
 <link rel="stylesheet" type="text/css" href="./hw1_files/seclab.css">
 
 <style type="text/css">
   .course-title, .quarter { margin: 0; }
-  .deadline { color: #D00; font-weight: bold }
-  .homeworks td { padding-bottom: 1em; }
-  .admin-category, .main-link, .homework { font-weight: bold; font-size: larger; }
-  .admin-category { width: 10em; }
-  table#admin-items { margin-top: 1em; border-collapse: collapse; }
-  img.icon {height:50px; width:50px;filter:none;}
-  div.c1 {margin-bottom:.4em;}
+  .parts { list-style-type: lower-alpha; }
+  .part  { margin-bottom: .5em; }
 </style>
-</head><body>
+</head>
+
+<body>
 <div id="inner-wrapper">
 <div id="outer-wrapper">
 
@@ -28,240 +24,259 @@ CS155: Computer and Network Security</a></h1>
 <div class="logo"><img src="./hw1_files/seclab-128.png" alt="Logo"></div>
 
 <h1 class="course-title">CS155:  Homework #1</h1>
-<h3 class="quarter">Spring 2012</h3>
+<h3 class="quarter">Spring 2013</h3>
 
-<h3>Due: Tuesday, May 1st</h3>
+<h3>Due: Tuesday, Apr. 30</h3>
 
 
 <!-- ======================================================== -->
 <hr><h3>Problem 1:  Control hijacking</h3>
 
-<p>
-(a) In x86 the stack grows downwards.  Explain how a stack-based
-overflow attack would work if the stack grew upwards instead.
-</p>
+<ol class="parts">
+<li class="part">
+In x86 the stack grows downwards. Explain how a stack-based overflow attack would work if the stack grew upwards instead.</li>
 
-<p>
-(b) How would you implement StackGuard in an architecture where the
-stack grows upwards?  What would be different from StackGuard on the
-x86?
-</p>
+<li class="part">
+How would you implement StackGuard in an architecture where the stack grows upwards? What would be different from StackGuard on the x86?</li>
 
-<p>
-(c) How would you implement LibSafe in an architecture where the stack
-grows upwards?  What would be different from LibSafe on the x86?
-</p>
+<li class="part">
+How would you implement LibSafe in an architecture where the stack grows upwards? What would be different from LibSafe on the x86?</li>
 
-<p>
-(d) Suppose you find a memory leak in a third-party library, e.g. the
-library cleanup function forgets to call free on a certain pointer
-<i>p</i>. You notice that some applications fix the problem by freeing the
-memory themselves. How could you fix the library cleanup function to
-free <i>p</i> without introducing a double-free vulnerability in applications
-that free the memory themselves?  You are only allowed to change the
-library. If you need to make an assumption about how the free function
-works, make sure to state your assumption explicitly.
-</p>
+</ol>
 
 
 <!-- ======================================================== -->
-<hr><h3>Problem 2:   Overflows</h3>
-
-A proposal for preventing stack buffer overflow attacks is based on
-making a backup copy of the return address when a function starts.
-The backup copy is written to a shadow stack located at some location
-<i>L</i> on the heap.  When the function terminates the backup copy is
-copied to the appropriate place in the stack and then the function
-executes the return instruction.
+<hr><h3>Problem 2:  Memory management</h3>
 
 <p>
-(a) Explain why this mechanism can make it harder to mount a stack
-buffer overflow attack.
+The iOS &nbsp;  <strong>_MALLOC(size_t size, int type, int flags)</strong> function
+allocates <strong>size</strong> bytes on the heap.   Internally blocks are
+represented as a length field followed by a data field:
+</p><pre>    struct _mhead {
+      size_t  mlen;
+      char    dat[0];  }
+</pre>
+The <strong>mlen</strong> field is used by the <strong>free()</strong>
+function to determine how much space needs to be freed.
+In iOS 4.x the <strong>_MALLOC</strong> function was implemented as follows:
+<pre>1   void * _MALLOC(size_t size, int type, int flags)  {
+2     struct _mhead  *hdr;
+3     size_t memsize = sizeof (*hdr) + size;
+4     hdr = (void *)kalloc(memsize);  // allocate memory
+5     hdr-&gt;mlen = memsize;
+6     return  (hdr-&gt;dat);
+7   }
+</pre>
+In iOS 5.x the following two lines were added after line 3:
+<pre>    int o = memsize &lt; size ? 1 : 0;
+    if (o)  return (NULL);
+</pre>
 
-</p><p>
-(b) Give sample code that is vulnerable to a stack buffer overflow
-even if this mechanism is used.  Hint: first, try to expose <i>L</i>,
-then use <i>L</i> to mount the exploit.
+<ol class="parts">
 
+<li class="part">Why were these lines added in iOS5.x?   Briefly describe an attack
+that may be possible without these lines.</li>
+
+<li class="part"> In iOS the kernel heap is divided into zones.  When
+  the zone allocator is called it allocates a new zone in a random
+  location in kernel space.  What security purpose does randomization
+  serve in this context?</li>
+
+</ol>
 
 
 
 <!-- ======================================================== -->
-</p><hr><h3>Problem 3:   Sandboxing  </h3>
+<hr><h3>Problem 3:   Sandboxing  </h3>
 
-<p>
-(a) Explain when would you use VM-based sanboxing rather than system call interposition.
-</p>
-<p>
-(b) Explain when would you use system call interposition rather than VM-based sanboxing.
-</p>
-<p>
-(c) In class we discussed a covert channel between two VMs based on CPU utilization and
-a synchronized clock between the VMs.   One might try to block this covert channel by preventing
-the VMs from synchronizing their clocks, e.g. by presenting each VM with a different time of day.
-You may assume the clocks run at normal speed, but are shifted by a random amount for each VM.
-Explain how an attacker can defeat this defense.
-</p>
-<p>
-(d) Suggest another method by which the covert channel based on CPU utilization can be blocked.
-</p>
+<ol class="parts">
+<li class="part">
+Explain in what settings would you use VM-based sanboxing rather than
+system call interposition.</li>
 
-<!-- ======================================================== -->
-<hr><h3>Problem 4: Unix access control</h3>
+<li class="part">
+Explain in what settings would you use system call interposition
+rather than VM-based sanboxing.</li>
 
-<p>
-<i>Part I</i>
-Recall that RUID stands for “Real User ID”, EUID stands for “
-Effective User ID”, and SUID stands for “Saved User ID”;
-recall also that programs can change their EUID (in restricted ways) by making the seteuid system call.
-Suppose that a Unix directory contains the following files with permissions set as shown.
-Assume that all SetGID and Sticky bits are turned off.
+<li class="part">
+In class we discussed a covert channel between two VMs based on CPU
+utilization and a synchronized clock between the VMs.  One might try
+to block this covert channel by preventing the VMs from synchronizing
+their clocks, e.g. by presenting each VM with a different time of day.
+You may assume the clocks run at normal speed, but are shifted by a
+random amount for each VM.  Explain how an attacker can defeat this
+defense.</li>
 
-</p><pre>                File Description          Permissions
-    Filename      Owner   Group    SetUID Owner Group Other
-    a.txt          10     10         -    rw-   r--   ---
-    b.txt          10     65         -    ---   rw-   rw-
-    c.txt          45     45         -    rw-   -w-   ---
-    d.txt          20     20         -    rw-   r--   r--
-    app            20     65         y    --x   --x   ---
-    server         20     45         -    --x   --x   ---
-</pre>
-
-<p>
-Assume that user 10 is in groups 10, 65, and 45.
-Assume that user 20 is only in group 20.
-
-</p><ol type="a">
-<li> Consider a process running with RUID=20, EUID=20, and SUID=20.
-Assuming no other process changes any of the file permissions, which of these files could it read?
-
-</li><li> Consider a process running with RUID=10, EUID=10, and SUID=15. 
-Assuming no other process changes any of the file permissions, which of these files could it write?
-
-</li><li>Suppose a process running with RUID=0, EUID=0, and SUID=0 calls the exec system call to run the program "app". 
-Assuming no other process changes any of the file permissions, which of these files could that instance of app read?
-
-</li><li>Suppose a process running with RUID=10, EUID=10, and SUID=10 calls the exec system call to run the program "server". 
-Assuming no other process changes any of the file permissions, which of these files could that instance of server execute?
-</li></ol>
-
-<p>
-<i>Part II</i>
-The Unix mount command attaches the filesystem found on some device to the  file tree of the system executing the mount command. 
-The standard form of the mount command, is
-</p><pre>       mount -t type device dir
-</pre>
-This tells the kernel to attach the filesystem found on <tt>device</tt> (which is of type <tt>type</tt>) at the directory <tt>dir</tt>. 
-The previous contents (if any) and owner and mode of dir become invisible. As long as this filesystem remains mounted,
-the pathname dir refers to the root of the filesystem on device.
-The  filename,  owner, group   and permissions of the files on the mounted device, including
-the SetUID bits, and Owner, Group, and Other permissions, are used by the system that mounts the device.
-
-Suppose a USB drive contains file <tt>f</tt> that has owner 0, execute permission, and SetUID bit set. If user 10 executes
-this file, which files above (<tt>a.txt,  b.txt, c.txt , d.txt, app, server</tt>) will Unix let
-the program in file <tt>f</tt> access? Is this a security problem?
-
-The Unix mount command has two relevant options.
-<pre>noexec     Do not allow direct execution of any binaries on the mounted filesystem. 
-
-nosuid     Do not allow set-user-identifier or set-group-identifier bits to take effect. 
-</pre>
-Which of these options would prevent the problem you discovered at the beginning of Part II? 
-Which of these options seems more useful for mounting file systems that may contain useful programs? Why?
+<li class="part">
+Suggest another method by which the covert channel based on CPU utilization can be blocked.</li>
+</ol>
 
 <!-- ======================================================== -->
-<hr><h3>Problem 5: Code analysis</h3>
+<hr><h3>Problem 4: TOCTOU</h3>
 
-<p>
-In lecture 5, we discussed <em>taint analysis</em>
-and one of the readings for that lecture discusses
-the tainted object propagation problem.
-Taint analysis is a general approach for finding many kinds of program bugs.
-In most forms of taint analysis, a value from
-an unknown or untrusted source is considered tainted. If the value is
-tested or manipulated in some way, then it may become untainted. If a
-tainted value is used an argument to a sensitive operation, then an
-error is reported. For example, PERL user input is considered tainted,
-and an error is reported if tainted values are used in system
-calls. If a tainted PERL value is compared to a pattern that is
-contained literally in the program, and not read from some other
-source, then it is considered untainted. </p>
-<ol type="a">
-
-<li>Taint analysis can be used to find buffer overflow vulnerabilities in source
-code by disallowing tainted array indices. Explain why a value should
-be considered untainted only if there are checks to make sure it is
-bigger than some minimum value and smaller than some maximum value -
-it is not enough to just check that it is less than some maximum
-value. You may want to refer to the following Linux device driver
-code. </li>
-
-  <pre>    /* 2.4.5/drivers/char/drm/i810_dma.c */
-    if (copy_from_user(&amp;d, (drm_i810_copy_t *)arg, sizeof(d)))
-            return -EFAULT;
-
-    if(d.idx &gt; dma-&gt;buf_count) return -EINVAL;
-    buf = dma-&gt;buflist[ d.idx ];
-    buf_priv = buf-&gt;dev_private;
-    if (buf_priv-&gt;currently_mapped != I810_BUF_MAPPED) return -EPERM;
-
-    if (copy_from_user(buf_priv-&gt;virtual, d.address, d.used))
-            return -EFAULT;</pre>
-
-<li>Taint analysis can be applied to source code, by simulated execution that
-keeps track of whether the values of variables could be tainted or not, or applied
-at run-time by keeping track (in an interpreter, for example) of whether the actual
-value is tainted. In a project for detecting malware via runtime taint analysis,
-researchers at CMU automatically insert taint tracking instructions.
-For example, the following code
-<pre>     recv(socketfd, buf1, …);
-     memcpy(buf2, buf1, …);
-     y = x;
-     strcpy(dummy-&gt;buf, buf1);
-     dummy-&gt;fnptr();
-</pre>
-is instrumented by inserting the indented lines
-<pre>     recv(socketfd, buf1, …);
-          NewTaint(buf1, …);
-     memcpy(buf2, buf1, …);
-          PropTaint(buf2, buf1, …);
-     y = x;
-          PropTaint(&amp;y, &amp;x, …);
-     strcpy(dummy-&gt;buf, buf1);
-          PropTaint(dummy-&gt;buf, buf1, …);
-          TaintAssert(&amp;fnptr, …);
-     dummy-&gt;fnptr();
-</pre>
-The first function call creates a new taint tracking flag for buf1.
-The next call sets the taint flag for buf2 to the flag value for buf1, and so on.
-The TaintAssert function makes sure that the taint flag for the given argument does
-<em>not</em> indicate that the value is tainted.
-If TaintAssert is called with a tainted argument, and error is reported.
-Explain the error in this code and how tainting analysis catches it.
-</li></ol>
-
-
-<hr><h3>Problem 6:   race-conditions</h3>
-
-Consider the following code snippet:
+<p>Consider the following code snippet:</p>
 <pre>  if (!stat("./file.dat", buf)) return;   // Abort if file exists.
   sleep(10);                              // Sleep for 10 seconds.
   fp = fopen("./file.dat", "w" );
   fprintf(fp, "Hello world" );
   close(fp);
 </pre>
-<p>(a) Suppose this code is running as a setuid root program.
+
+<ol class="parts">
+<li class="part">
+Suppose this code is running as a setuid root program.
 Give an example of how this code can lead to unexpected behavior
 that could cause a security problem.   (try using symbolic links.)
-</p><p>(b) Suppose the sleep(10) is removed from the
+</li>
+
+<li class="part">
+Suppose the sleep(10) is removed from the
 code above.   Could the problem you identified in part (a) still occur?
-Please explain.</p>
-<p>(c) How would you fix the code to prevent the problem from part (a)?
+Please explain.
+</li>
+
+<li class="part">
+How would you fix the code to prevent the problem from part (a)?
+</li>
+</ol>
+
+<!-- ======================================================== -->
+<hr><h3>Problem 5: Soundness and completeness for static code analysis </h3>
+
+In lecture 3, we discussed these two definitions briefly:
+
+<p>
+<i>Soundness:</i> If the program contains an error, the analysis will report a warning.
+
+</p><p>
+<i>Completeness:</i> If the analysis reports an error, the program will contain an error.
+
+</p><ol class="parts">
+<li class="part">
+A <i>false alarm</i> occurs when a tool reports an error, but the program the tool is analyzing does not contain an error.
+Can a tool that reports a false alarm be sound? Complete?
+</li>
+
+<li class="part">
+Suppose a company sets up an Android app marketplace for its employees. The company is going to use an analysis
+tool to check apps for security vulnerabilities before it promotes them to its employees. Which tool property is critical to the company
+for this purpose: soundness or completeness?
+</li>
+
+<li class="part">
+Theoretically, suppose a tool is both sound and complete. When the tool is used to analyze the following code that
+<i>may</i> contain a vulnerability, what property of the loop determines whether the tool will report an error?
+<pre>      int main()
+      { 
+        int x = 0;  
+        while ( x &lt; 10 ) { /* loop while x is less than 10 */
+             ...  /* do some stuff that might change the value of x  */
+        }
+        ... /* do something insecure */;
+      }
+</pre>
+</li></ol>
+
+<!-- ======================================================== -->
+<hr><h3>Problem 6: Changing your Unix password </h3>
+
+The Unix passwd program allows users to change their passwords. 
+This problem asks you about the access permissions required to do this.
+Here, for reference, is a summary of the read-write-execute permissions 
+associated with any Unix file (from Wikipedia).
+
+<table style="text-align: center;">
+<tbody><tr>
+<th>Symbolic Notation</th>
+<th>Octal Notation</th>
+<th>English</th>
+</tr>
+<tr>
+<td style="text-align: left; padding-left: 5%;">----------</td>
+<td>0000</td>
+<td style="text-align: left; padding-left: 5%;">no permissions</td>
+</tr>
+<tr>
+<td style="text-align: left; padding-left: 5%;">---x--x--x</td>
+<td>0111</td>
+<td style="text-align: left; padding-left: 5%;">execute</td>
+</tr>
+<tr>
+<td style="text-align: left; padding-left: 5%;">--w--w--w-</td>
+<td>0222</td>
+<td style="text-align: left; padding-left: 5%;">write</td>
+</tr>
+<tr>
+<td style="text-align: left; padding-left: 5%;">--wx-wx-wx</td>
+<td>0333</td>
+<td style="text-align: left; padding-left: 5%;">write &amp; execute</td>
+</tr>
+<tr>
+<td style="text-align: left; padding-left: 5%;">-r--r--r--</td>
+<td>0444</td>
+<td style="text-align: left; padding-left: 5%;">read</td>
+</tr>
+<tr>
+<td style="text-align: left; padding-left: 5%;">-r-xr-xr-x</td>
+<td>0555</td>
+<td style="text-align: left; padding-left: 5%;">read &amp; execute</td>
+</tr>
+<tr>
+<td style="text-align: left; padding-left: 5%;">-rw-rw-rw-</td>
+<td>0666</td>
+<td style="text-align: left; padding-left: 5%;">read &amp; write</td>
+</tr>
+<tr>
+<td style="text-align: left; padding-left: 5%;">-rwxrwxrwx</td>
+<td>0777</td>
+<td style="text-align: left; padding-left: 5%;">read, write, &amp; execute</td>
+</tr>
+</tbody></table>
+
+<ol class="parts">
+<li class="part">
+The password file is owned by the system (root) and readable by any user. Write appropriate permissions in the symbolic notation illustrated above. Any answer is acceptable for group permissions.
+</li>
+
+<li class="part">
+The passwd program is owned by the system (root). What Unix feature allows an ordinary user to run passwd and change their password? Explain.
+</li>
+
+<li class="part">
+When a normal user, say "bob", runs passwd, passwd starts with: 
+<pre>      Real-UID = bob 
+      Effective-UID = bob 
+      Saved-UID = root 
+</pre>
+The program makes a system call "seteuid( 0 )". What will be the Real-UID, Effective-UID, Saved-UID after this call?
+</li>
+
+<li class="part">
+Suppose the program called "seteuid( alice )" instead, <i>before</i> calling "seteuid( 0 )". What would be the Real-UID, Effective-UID, Saved-UID after this call?
+</li>
+
+<li class="part">
+Suppose the program called "seteuid( alice )" <i>after</i> calling "seteuid( 0 )". What would be the Real-UID, Effective-UID, Saved-UID after this call?
+</li>
+
+<li class="part">
+Of course, passwd does not call "seteuid( alice )". 
+Explain why passwd can write /etc/passwd and change password for user "bob" after the call seteuid( 0 ).
+</li>
+
+<li class="part">
+Suppose passwd reads some other user input and does some other action after changing the password file. For example,
+we might want a custom version of passwd that writes into a log file owned by bob, when bob changes his password.
+What system call would you recommend after writing the password file and before doing other actions? 
+What will be the  Real-UID, Effective-UID, Saved-UID after the system call you recommend?
+</li>
+</ol>
 
 
-</p></div>
 </div>
 </div>
+</div>
+
 
 
 
