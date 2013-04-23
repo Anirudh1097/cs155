@@ -27,7 +27,7 @@ VM Setup
 	reboot
 
 5. Create mount point
-	cd ~; mkdir cs155
+	cd ~; mkdir cs155;
 	
 
 
