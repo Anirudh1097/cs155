@@ -5,7 +5,7 @@
 #include "shellcode.h"
 
 #define TARGET "/tmp/target5"
-#define EGG_SIZE 400
+#define EGG_SIZE 400 
 
 int main(void)
 {
@@ -13,7 +13,6 @@ int main(void)
   char *env[1];
   char egg[EGG_SIZE];
   char *ptr;
-  long *ptr2;
   int i, l;
 
   memset (egg, '\x00', sizeof (egg));
