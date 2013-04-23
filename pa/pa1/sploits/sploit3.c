@@ -9,6 +9,8 @@
 
 /* 
  * Main idea of exploit:
+ *     This is a basic integer overflow exploit. 
+ *
  *     The main idea of is to exploit an integer
  *     overflow vulnerability in the line:
  *       count = (int)strtoul(argv[1], &in, 10);
