@@ -5,7 +5,7 @@
 #include "shellcode.h"
 
 #define TARGET "/tmp/target3"
-#define EGG_SIZE 20028 /* size of exploit string, enough to overrun the 256 buffer in target1.c:foo */ 
+#define EGG_SIZE 20028 /* size of exploit string */ 
 
 /* 
  * Main idea of exploit:
