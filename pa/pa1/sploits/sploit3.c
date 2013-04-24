@@ -60,8 +60,8 @@ int main(void)
   args[0] = TARGET; args[1] = egg; args[2] = NULL;
   env[0] = NULL;
 
-  if (0 > execve(TARGET, args, env))
-    fprintf(stderr, "execve failed.\n");
+  if (0 > execve (TARGET, args, env))
+    fprintf (stderr, "execve failed.\n");
 
   return 0;
 }
