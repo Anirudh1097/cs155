@@ -1,0 +1,100 @@
+1. 
+
+a) While overflowing buffers in the current stack frame cannot overwrite the saved eip for the current activation record, It can be done by overflowing a buffer in a previous activation record. 
+
+Suppose function BAR calls function FOO and function BAR has a local buffer BUFF. Inside function FOO there is code that copies data into BUFF unsafely. BUFF then can be overflown to overwrite the SAVED EIP for FOO and hijack control.
+
+Stack grows upward
+	|
+
+LOCALS
+SAVED EBP
+SAVED EIP
+ARGS TO FOO
+**** Activation Record for FOO ****
+
+BUFF
+SAVED EBP
+SAVED EIP
+ARGS TO BAR
+**** Activation Record for BAR ****
+	|
+	...
+
+
+    Top of Stack / Top of Memory
+                .
+                .
+                .
+		++++++++++++++++
+		|    LOCALS    |  \
+		|   SAVED EBP  |   \  activation record for FOO
+		|   SAVED EIP  |   /
+		|  ARGS TO FOO |  /
+		++++++++++++++++
+		|      ^       |  \
+		|      |       |   \
+		|     BUFF     |    \  activation record for BAR  
+		|   SAVED EBP  |    /  
+		|   SAVED EIP  |   /
+		|  ARGS TO BAR |  /
+		++++++++++++++++
+               .
+               .
+               .
+    Bottom of Stack / Bottom of Memory
+
+
+
+
+bottom of                                                            top of
+memory                                                               memory
+           buffer2       buffer1   sfp   ret   a     b     c
+<------   [            ][        ][    ][    ][    ][    ][    ]
+	   
+top of                                                            bottom of
+stack                                                                 stack
+
+
+
+                             /------------------\  lower
+                             |                  |  memory
+                             |       Text       |  addresses
+                             |                  |
+                             |------------------|
+                             |   (Initialized)  |
+                             |        Data      |
+                             |  (Uninitialized) |
+                             |------------------|
+                             |                  |
+                             |       Stack      |  higher
+                             |                  |  memory
+                             \------------------/  addresses
+
+                         Fig. 1 Process Memory Regions
+
+
+
+b) Stackguard in upward growing stack:
+Put a canary between Args and Saved EIP and check integrity prior to function return. 
+Differs from x86 in fact that canary in x86 has to defend against a buffer in current activation record overwirinting saved eip as opposed to buffer in previous activation record corrputing saved eip. Thus the placement of canary has to be different. 
+
+c) LIbSafe in upward growing stack:
+		 	 	 					
+|frame-pointer – dest| > strlen(src) 
+
+changes to 
+
+
+
+5
+b) completeness, no false positives, soundness not actiobnable dont knwo where to strat, completeness provides actionable info, better use of resoucrs
+
+a)-rw-r--r--
+b) setuid
+c) bob, root, root
+d) bob, bob, root 
+e) bob, alice, root
+f) 
+g) seteuid(bob)
+    bob, bob, root
