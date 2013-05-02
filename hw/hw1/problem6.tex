@@ -1,13 +1,15 @@
 \begin{prob}  (Changing your Unix password) 
 \end{prob}
 
+\noindent My answers assume the rules for \verb+seteuid+ described in \verb+http://linux.die.net/man/2/seteuid+.\\
+
 \noindent \textit{a) The password file is owned by the system (root) and readable by any user. Write appropriate permissions in the symbolic notation illustrated above. Any answer is acceptable for group permissions.}\\
 
  \verb+-rw-r--r--+\\
 
 \noindent \textit{b) The passwd program is owned by the system (root). What Unix feature allows an ordinary user to run passwd and change their password? Explain.}\\
 
- \verb+seteuid+\\
+ \verb+seteuid+. It allows an unprivileged user to change his effective user id (the one used to evaluate permissions) to their SUID or their RUID. If a user process has SUID set to root then he can successfully call \verb+seteuid(root)+ to set EUID = root and then run the passwd program to change their password.\\
 
 \noindent \textit{c) When a normal user, say "bob", runs passwd, passwd starts with:\\
       \indent Real-UID = bob \\
@@ -33,18 +35,24 @@ The program makes a system call "seteuid( 0 )". What will be the Real-UID, Effec
 
 \noindent \textit{f) Of course, passwd does not call "seteuid( alice )". Explain why passwd can write /etc/passwd and change password for user "bob" after the call seteuid( 0 ).}\\
 
-\noindent 
+\noindent After the call to seteuid(0) the effective user id of the password process is root (see c)). When trying to open the password file with write privileges the OS will check, according to the file permissions for /etc/passwd, if the process has permissions to write to the file. Since, by a), the only user id who can write to the file is root and the EUID of the process is root then this check will pass and the process will be allowed to open and write to the file.\\
 
 \noindent \textit{g) Suppose passwd reads some other user input and does some other action after changing the password file. For example, we might want a custom version of passwd that writes into a log file owned by bob, when bob changes his password. What system call would you recommend after writing the password file and before doing other actions? What will be the Real-UID, Effective-UID, Saved-UID after the system call you recommend?}\\
 
-\noindent 
+\noindent After writing to the password file do \verb+seteuid(bob)+ before doing any other actions. After this system call the RUID, EUID, and SUID will be\\
+
+      \indent Real-UID = bob \\
+      \indent Effective-UID = bob\\ 
+      \indent Saved-UID = root \\
 
 
-a)-rw-r--r--
-b) setuid
-c) bob, root, root
-d) bob, bob, root 
-e) bob, alice, root
-f) 
-g) seteuid(bob)
-    bob, bob, root
+%
+%
+%a)-rw-r--r--
+%b) setuid
+%c) bob, root, root
+%d) bob, bob, root 
+%e) bob, alice, root
+%f) 
+%g) seteuid(bob)
+%    bob, bob, root
