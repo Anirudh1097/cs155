@@ -1,4 +1,43 @@
-\begin{prob} 
+\begin{prob}  (TOCTOU) 
 \end{prob}
 
+\noindent Consider the following code snippet from \verb+foo.c+:
+\begin{verbatim}
+1a.  if (!stat("./file.dat", buf)) return;   // Abort if file exists.
+2a.  sleep(10);                              // Sleep for 10 seconds.
+3a.  fp = fopen("./file.dat", "w" );
+4a.  fprintf(fp, "Hello world" );
+5a.  close(fp);
+\end{verbatim}
+\noindent \textit{a) Suppose this code is running as a setuid root program. Give an example of how this code can lead to unexpected behavior that could cause a security problem. (try using symbolic links.)}\\
 
+\noindent Suppose there is a malicious program \verb+bar.c+ that simply does the following:
+\begin{verbatim}
+1b.  symlink ("/etc/passwd", "./file.dat");
+\end{verbatim}
+i.e. it creates a symlink from \verb+./file.dat+ to \verb+/etc/passwd+ (assuming \verb+./file.dat+ does not exist). Suppose furthermore that the programs \verb+foo+ and \verb+bar+ are both running at the same time, with the same current working directory environment variable and that \verb+foo+ is running as a seteuid root program. Consider the following scenario: A file \verb+./file.dat+ does not exists when both programs start executing. \verb+foo+ is scheduled first and gets to line 1a. passes the test then goes on to line 2a. and gets switched out while sleeping. \verb+bar+ then gets scheduled in and executes line 1b  successfully creating a symlink from \verb+./file.dat+ to \verb+/etc/passwd+ and exits. Then \verb+foo+ gets switched in again and continues to execute lines 3a through 5a. Since it has root EUID then \verb+foo+ will be allowed to open \verb+/etc/passwd+ and write "Hello world" to the beginning of the file. 
+
+This represents a security problem since the malicious program has achieved the password file to be overwritten, possibly corrupting the information for some user(s) and thus at least creating a denial of service attack against those user(s) since their credentials have been corrupted. Note: one can add a call to \verb+remove("./file.dat");+ before the \verb+symlink+ call in \verb+bar+ to make the attack work sometimes in cases where the file \verb+./file.dat+ existed prior to starting. \\
+
+\noindent \textit{b) Suppose the sleep(10) is removed from the code above. Could the problem you identified in part (a) still occur? Please explain.}\\
+
+\noindent \textbf{The problem in (a) can still occur, however it becomes less probable.} The problem in (a) happened because \verb+bar+ got switched in while \verb+foo+ was sleeping. This was likely to occur since sleeping for 10 seconds will probably cause the scheduler to switch that process out and some other process in. By removing the \verb+sleep+ call we only decrease the probability of that exact interleaving, however it is still possible for \verb+bar+ to get switched in right before the call to \verb+fopen+ in \verb+foo+, which would result in the same problem.\\
+
+\noindent \textit{c) How would you fix the code to prevent the problem from part (a)?}\\
+
+\noindent The problem comes from the fact that checking in the file exists and opening it is not done atomically. According to the Linux man pages for open:
+\begin{verbatim}
+If O_CREAT and O_EXCL are set, open() shall fail if the file exists. The check for the existence of the
+file and the creation of the file if it does not exist shall be atomic with respect to other threads
+executing open() naming the same filename in the same directory with O_EXCL and O_CREAT set. If O_EXCL
+and O_CREAT are set, and path names a symbolic link, open() shall fail and set errno to [EEXIST], regardless
+of the contents of the symbolic link. If O_EXCL is set and O_CREAT is not set, the result is undefined.
+\end{verbatim}
+Hence we can use the \verb+O_EXCL, O_CREAT+ files to make the existence checking and file opening atomic in the above code as follows:
+\begin{verbatim}
+1a.  int fp = open("./file.dat", O_CREAT | O_EXCL, 0644);
+2a.  if (fp == -1) return;
+4a.  fprintf(fp, "Hello world" );
+5a.  close(fp);
+\end{verbatim}
+Another way to prevent this problem is by using mandatory file locks in \verb+foo.c+.
