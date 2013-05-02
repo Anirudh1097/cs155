@@ -1,2 +1,38 @@
-\begin{prob} 
+\begin{prob}  (Memory management) 
 \end{prob}
+
+\noindent The iOS  \verb+_MALLOC(size_t size, int type, int flags)+ function allocates size bytes on the heap. Internally blocks are represented as a length field followed by a data field:
+\begin{verbatim}
+    struct _mhead {
+      size_t  mlen;
+      char    dat[0];  }
+\end{verbatim}
+The mlen field is used by the free() function to determine how much space needs to be freed. In iOS 4.x the \_MALLOC function was implemented as follows:
+\begin{verbatim}
+1   void * \_MALLOC(size_t size, int type, int flags)  {
+2     struct _mhead  *hdr;
+3     size_t memsize = sizeof (*hdr) + size;
+4     hdr = (void *)kalloc(memsize);  // allocate memory
+5     hdr->mlen = memsize;
+6     return  (hdr->dat);
+7   }
+\end{verbatim}
+In iOS 5.x the following two lines were added after line 3:
+\begin{verbatim}
+    int o = memsize < size ? 1 : 0;
+    if (o)  return (NULL);
+\end{verbatim}
+    
+\noindent \textit{a) Why were these lines added in iOS5.x? Briefly describe an attack that may be possible without these lines.}\\
+
+\noindent  These lines were added to prevent integer overflow attacks/bugs. Let MAX be the maximum value representable by a \verb+size_t+. Suppose \verb+size+ is equal to MAX. Since \verb+size_t+ is an unsigned type then \verb+memsize+ will overflow to be 3 (MAX + 1 wraps around to 0, ..., MAX + 4 = MAX + sizeof(*hdr) = memsize wraps around to 3). 
+
+Now consider a scenario where we have a user program that takes an input string, allocates space in the heap to hold the string and then copies it. Suppose the attacker provided an input string of size MAX. The user will then call \verb+_MALLOC+ with \verb+size = MAX+ and get back a pointer \verb+ptr+ somewhere in the heap. The user will think \verb+ptr+ was allocated enough space to hold the string while in reality it was allocated only 3 bytes. When the user copies the string to \verb+ptr+ it will overwrite a bunch of memory next to his 3 allocated bytes and possibly trash memory in use by the heap allocator. Since it has likely overwritten user data as well as memory management data used by the heap allocator  then subsequent calls that free that overwritten data will likely crash the program. At the very least, this will be a denial of service attack. 
+
+If the attacker knows the state of memory in the user program (or has the ability to massage the heap to a known state) and hence knows what the memory next to his allocated 3 bytes looks like he can fabricate malicious input to overwrite the memory management data used by \verb+free+. This can result in a control hijacking attack much like in the double free exploit from project 1. \\
+
+\noindent \textit{b) In iOS the kernel heap is divided into zones. When the zone allocator is called it allocates a new zone in a random location in kernel space. What security purpose does randomization serve in this context?}\\
+
+\noindent Relating to the last point made in a) if the attacker knows the state of the heap in the user process or if he has the ability to massage it to a known state (as in heap feng shui), then he will be able to exploit bugs like the one described in a) to overwrite memory management data to hijack control. Randomization makes it very difficult for an attacker to exactly know the state of the heap or massage it to a known state since the state changes from one run to the next. 
+
+In summary, randomization helps in making less robust/more unreliable attacks where the attacker can know the state of the heap.
