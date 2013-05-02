@@ -1,3 +1,50 @@
-\begin{prob} 
+\begin{prob}  (Changing your Unix password) 
 \end{prob}
 
+\noindent \textit{a) The password file is owned by the system (root) and readable by any user. Write appropriate permissions in the symbolic notation illustrated above. Any answer is acceptable for group permissions.}\\
+
+ \verb+-rw-r--r--+\\
+
+\noindent \textit{b) The passwd program is owned by the system (root). What Unix feature allows an ordinary user to run passwd and change their password? Explain.}\\
+
+ \verb+seteuid+\\
+
+\noindent \textit{c) When a normal user, say "bob", runs passwd, passwd starts with:\\
+      \indent Real-UID = bob \\
+      \indent Effective-UID = bob\\ 
+      \indent Saved-UID = root \\
+The program makes a system call "seteuid( 0 )". What will be the Real-UID, Effective-UID, Saved-UID after this call?}\\
+
+      \indent Real-UID = bob \\
+      \indent Effective-UID = root\\ 
+      \indent Saved-UID = root \\
+
+\noindent \textit{d) Suppose the program called "seteuid( alice )" instead, before calling "seteuid( 0 )". What would be the Real-UID, Effective-UID, Saved-UID after this call?}\\
+
+      \indent Real-UID = bob \\
+      \indent Effective-UID = bob\\ 
+      \indent Saved-UID = root \\
+
+\noindent \textit{e) Suppose the program called "seteuid( alice )" after calling "seteuid( 0 )". What would be the Real-UID, Effective-UID, Saved-UID after this call?}\\
+
+      \indent Real-UID = bob \\
+      \indent Effective-UID = alice\\ 
+      \indent Saved-UID = root \\
+
+\noindent \textit{f) Of course, passwd does not call "seteuid( alice )". Explain why passwd can write /etc/passwd and change password for user "bob" after the call seteuid( 0 ).}\\
+
+\noindent 
+
+\noindent \textit{g) Suppose passwd reads some other user input and does some other action after changing the password file. For example, we might want a custom version of passwd that writes into a log file owned by bob, when bob changes his password. What system call would you recommend after writing the password file and before doing other actions? What will be the Real-UID, Effective-UID, Saved-UID after the system call you recommend?}\\
+
+\noindent 
+
+
+a)-rw-r--r--
+b) setuid
+c) bob, root, root
+d) bob, bob, root 
+e) bob, alice, root
+f) 
+g) seteuid(bob)
+    bob, bob, root
