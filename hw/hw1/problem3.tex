@@ -1,5 +1,71 @@
-\begin{prob} 
+\begin{prob}  (Sandboxing) 
 \end{prob}
 
+\noindent For a) and b): in general, if we have an application whose functionality is tightly coupled with other applications (i.e. it needs to constantly establish many channels of communications with other applications to do its work) then system-call interposition would be preferred to VM-sandboxing. If an OS-level gap was established through VM-sandboxing then the application would need to be going through the VMM to establish network connections to processes in other VMs (TCP, UDP, ...), which have their own overhead and may turn out to be a prohibitive cost.
 
+On the other hand if the application is not tightly coupled to other applications (e.g. a text editor) then VM-sandboxing would not be prohibitive and may be preferred for more security.\\
 
+\noindent \textit{a) Explain in what settings would you use VM-based sandboxing rather than system call interposition.}\\
+
+\noindent  As mentioned above, VM-sanboxing can be used in cases where the application is loosely coupled with other applications. Another scenario in which to prefer VM-sandboxing is the following: if we have an application for which it is hard to comprehend all the permissions it needs to operate correctly (for example Microsoft Exchange) then it might be nearly impossible to write a policy file to be used in system-call interposition. In this cases VM-sandboxing might be preferred.\\
+
+\noindent \textit{b) Explain in what settings would you use system call interposition rather than VM-based sandboxing.}\\
+
+\noindent As explained above we might want to use system call interposition when the application in question is tightly coupled with other applications and needs to be constantly establishing many communication channels to other applications inside the same machine. \\
+
+\noindent \textit{c) In class we discussed a covert channel between two VMs based on CPU utilization and a synchronized clock between the VMs. One might try to block this covert channel by preventing the VMs from synchronizing their clocks, e.g. by presenting each VM with a different time of day. You may assume the clocks run at normal speed, but are shifted by a random amount for each VM. Explain how an attacker can defeat this defense.}\\
+
+\noindent Let M be the VM where the malware resides and L be the VM where the listener resides. Suppose M's clock trails \verb+offset+ second behind L's clock (i.e. \verb+time_of_day(L) = time_of_day(M)+ + \verb+offset+). Now consider the following algorithm for discovering \verb+offset+ / synchronizing the clocks:
+\begin{verbatim}
+Every day at 12:00am malware does CPU intensive computation
+
+for i from 0 to NUM_SECONDS_IN_DAY - 1 {
+  at 12:00am + i seconds listener does CPU intensive computation and measure completion time
+  if completion_time > threshold:
+    offset = i; break;
+  else continue
+}
+\end{verbatim}
+After NUM\_SECONDS\_IN\_DAY days the malware can assume that the listener has figured out the correct offset since the for loop executes at most NUM\_SECONDS\_IN\_DAY times. Hence, on day NUM\_SECONDS\_IN\_DAY + 1 transmission of protected data can start according to:
+\begin{verbatim}
+To send a bit b = {0, 1} malware does:
+  if b = 1: at 12:00am + offset do CPU intensive calc
+  if b = 0: at 12:00am + offset do nothing
+  
+At 12:00am listener does CPU intensive calc and measures completion time:
+  b = 1 if and only if completion time > threshold
+\end{verbatim}
+Of course, this scheme is only theoretical since it takes NUM\_SECONDS\_IN\_DAY days (about 200 years) only for the synchronization phase. However, this can be fixed in the following way. 
+
+The fact that we wanted to synchronize the clocks to the same second of the day was arbitrary. We can synchronize them to the same second of the minute and still have an effective scheme, i.e. we want to figure out instead \verb+ offset =+ \verb+second_of_the_minute(L) - second_of_the_minute(M)+  where for example \verb+second_of_the_minute(12:00:59pm) = 59+. The scheme now becomes:
+\begin{verbatim}
+Every minute at 0 seconds malware does CPU intensive computation
+
+for i from 0 to NUM_SECONDS_IN_MINUTE - 1 {
+  at start_of_minute + i seconds listener does CPU intensive computation and measure completion time
+  if completion_time > threshold:
+    offset = i; break;
+  else continue
+}
+
+After 60 minutes malware can assume listener knows the offset and start transmitting data at minute 61.
+
+To send a bit b = {0, 1} malware does:
+  if b = 1: at start_of_minute + offset do CPU intensive calc
+  if b = 0: at start_of_minute + offset do nothing
+  
+At start_of_minute listener does CPU intensive calc and measures completion time:
+  b = 1 if and only if completion time > threshold
+\end{verbatim}
+
+Of course, if this is so fine grained that causes problems in synchronization one can move to a more coarse synchronization level like second of the hour and still get reasonable run time.\\
+
+\noindent \textit{d) Suggest another method by which the covert channel based on CPU utilization can be blocked.}\\
+
+\noindent Three come to mind: 
+
+\noindent \textbf{1. Time-slicing: }Have all VMs be given an equal slice of time when scheduled in the CPU. In this way the completion time of the listener's computation will be unaffected by the intensity of the computation being done on the other VM by the malware, thus defeating the attack. 
+
+\noindent \textbf{2. Separate resources: }assign the VMs to run on different cores. As in the previous approach, the completion time of the listener's computation will be unaffected by the intensity of the computation being done in the VM where the malware resides.
+
+\noindent \textbf{3. Randomly introduce idle time when a process is scheduled into the CPU: }this is the least efficient, but by introducing random delays some 0 bits sent by the malware will be corrupted to 1's making the covert channel dirty.
