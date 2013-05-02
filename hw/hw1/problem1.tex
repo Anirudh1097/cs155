@@ -3,10 +3,9 @@
 
 \noindent \textit{a) In x86 the stack grows downwards. Explain how a stack-based overflow attack would work if the stack grew upwards instead.}\\
 
-\noindent For upward growing stacks overflowing an insecure buffer in the current activation record\footnote{the activation record of the function being cureently executed} will not generally result in a stack smashing attack since, at most, we will overwrite local variables but not any of the control data embedded in the stack (like saved eips,  ebps or arguments). \textbf{However, stack smashing attacks can be done in this architecture by overflowing a buffer in a previous activation record. }
+\noindent For upward growing stacks overflowing an insecure buffer in the current activation record\footnote{the activation record of the function being current	ly executed} will not generally result in a stack smashing attack since, at most, we will overwrite local variables but not any of the control data embedded in the stack (like saved eips,  ebps or arguments). \textbf{However, stack smashing attacks can be done in this architecture by overflowing a buffer in a previous activation record. }
 \begin{verbatim}
     Top of Stack / Top of Memory
-                .
                 .
                 .
         		++++++++++++++++
@@ -24,7 +23,6 @@
         		++++++++++++++++
                .
                .
-               .
     Bottom of Stack / Bottom of Memory
 \end{verbatim}
 Suppose function BAR calls function FOO and function BAR has a local buffer BUFF. Inside function FOO there is code that copies data into BUFF unsafely. BUFF then can be overflown to overwrite the SAVED EIP for FOO and hijack control when FOO returns.\\
@@ -32,13 +30,11 @@ Suppose function BAR calls function FOO and function BAR has a local buffer BUFF
 \noindent \textit{b) How would you implement StackGuard in an architecture where the stack grows upwards? What would be different from StackGuard on the x86?}\\
 
 \noindent From the picture above we see that in order to overflow BUFF and overwrite the SAVED EIP for FOO we need to stomp first over ARGS TO FOO and then its SAVED EIP. To implement StackGuard in the upward growing architecture we can make the compiler \textbf{place a canary in the stack right before the arguments for a function call to the stack. Prior to function return we will verify the integrity of the current activation record by checking the canary} and kill the process if we detect corruption. 
-This differs from x86 in fact that canary in x86 has to defend against a buffer in an activation record overwriting the saved eip of that activation record as opposed to a buffer in previous activation record corrupting the saved eip of a subsequent activation record. Thus the placement of canary has to be different. 
+This differs from x86 in fact that the canary in x86 has to defend against a buffer overflow in an activation record overwriting the saved eip of that activation record as opposed to a buffer overflow in previous activation record corrupting the saved eip of a subsequent activation record. Thus the placement of the canary has to be different. The following diagram shows the different placements.
 \begin{verbatim}
 a) StackGuard layout for downward growing stack   b) StackGuard layout for upward growing stack 
 
    Bottom of Stack / Top of Memory                   Top of Stack / Top of Memory
-      
-            .                                                 . 
             .                                                 .
             .                                                 .
  		 ++++++++++++++++ 		                                 ++++++++++++++++
@@ -58,11 +54,34 @@ a) StackGuard layout for downward growing stack   b) StackGuard layout for upwar
  		 ++++++++++++++++ 	                            	    ++++++++++++++++
             .                                                 .
             .                                                 .
-            .                                                 .
-
    Top of Stack / Bottom of Memory                   Bottom of Stack / Bottom of Memory
 \end{verbatim}
 
+\noindent \textit{c) How would you implement LibSafe in an architecture where the stack grows upwards? What would be different from LibSafe on the x86?}\\
 
+\noindent The following diagram illustrates the stack layout for a call to strcpy from a function FOO in downward and upward growing stack architectures:
+\begin{verbatim}
+ c) Libsafe layout for downward growing stack   d) Libsafe layout for upward growing stack 
+
+    Bottom of Stack / Top of Memory                   Top of Stack / Top of Memory
+             .                                                 .
+  		 ++++++++++++++++ 		                                 ++++++++++++++++ 
+  		 |  ARGS TO FOO |  \ 		                              |    LOCALS    |\
+  		 |   SAVED EIP  |   \ act. record for FOO        -- |   SAVED EBP  | \ act. record for strcpy
+ -->|   SAVED EBP  |   /                           |   |   SAVED EIP  | / 
+| 		 |       ^      |  /  	                         | - |     dest     |/ 
+| 		 |       |      | /  		                          ||  |     src      |
+| ->|     BUFF     |/  		                           ||  ++++++++++++++++
+||  ++++++++++++++++ 	      	                      ||  |      ^       |\
+||  |     src      | \ 	                           ||  |      |       | \ 
+| - |     dest     |  \                            | ->|     BUFF     |  \ act. record for FOO
+| 		 |   SAVED EIP  |   \ act. record for strcpy     -->|   SAVED EBP  |  /
+ -- |   SAVED EBP  |   /  		                            |   SAVED EIP  | /
+  		 |    LOCALS    |  /  		                             |  ARGS TO FOO |/
+  		 ++++++++++++++++ 	                            	    ++++++++++++++++
+             .                                                 .
+    Top of Stack / Bottom of Memory                   Bottom of Stack / Bottom of Memory
+\end{verbatim}
+As discussed in lecture, in x86 Libsafe intercepts the call to \verb+strcpy(dest, src)+  and validates that there is sufficient space in the current stack frame via the test: \verb+|SAVED EBP for strcpy - dest| > strlen(src)+. The picture clearly shows that \textbf{in the upward growing stack architecture in order to ensure} \verb+strcpy+ \textbf{does not overwrite} \verb+src+\textbf{ we would need the test: }\verb+|&src - dest| > strlen(src)+. This approach of checking that the size of the data to be copied is no longer than the size of the space between the first argument to the Libsafe function and the start of the buffer being written to generalizes to other functions like \verb+memcpy, strncpy, memset+, etc.
 
 %\noindent For downward growing stacks a stack smashing attack is based on overflowing an insecure buffer in the current activation record \footnote{the activation record of the function being cureently executed} and overwriting the saved return address of the current activation record. While overflowing buffers in the current stack frame cannot overwrite the saved eip for the current activation record, It can be done by overflowing a buffer in a previous activation record. 
