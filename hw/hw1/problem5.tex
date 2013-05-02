@@ -1,5 +1,31 @@
-\begin{prob} 
+\begin{prob}  (Soundness and completeness for static code analysis)
 \end{prob}
 
+\noindent \textit{a) A false alarm occurs when a tool reports an error, but the program the tool is analyzing does not contain an error. Can a tool that reports a false alarm be sound? Complete?}\\
 
+\noindent \textit{Completeness: }By definition, a false alarm means reporting/flagging as an error something that is not an error in reality. A complete tool \text{only} reports things that are errors in reality. \textbf{Hence, a tool that report false alarms can definitely not be complete}.
 
+\noindent\textit{Soundness: } Soundness requires the program to report all real errors, plus possibly some false alarms. \textbf{Hence, a tool that reports false alarms can be sound if and only if it also reports all real errors.}\\
+
+\noindent \textit{b) Suppose a company sets up an Android app marketplace for its employees. The company is going to use an analysis tool to check apps for security vulnerabilities before it promotes them to its employees. Which tool property is critical to the company for this purpose: soundness or completeness?}\\
+
+\noindent \textbf{Argument for soundness: } Consider a company that has a very high sensitivity to vulnerabilities (e.g. a governmental organization that stores highly classified national security information or intelligence, or a company that stores very sensitive consumer data such as health records, etc) and hence wants to be \textit{absolutely certain} that the apps it promotes to its employees do not contain errors. Its sensitivity to vulnerabilities is so high that the company does not mind rejecting apps that did not actually contain errors and does not have resources or want to spend them investigating whether the apps it forbids are actually insecure. A sound tool will fit its purposes best since it will report all the real errors plus some false alarms. The company can just forbid all apps for which the tool reported errors. This would to ensure all apps it promotes to its employees are secure. \textbf{Alternatively,} if the company is willing to spend a lot of resources to be certain that the apps it promotes to its employees do not contain errors while accepting as many apps as possible the company will then have to devote resources to sift through the reports and discern between false alarms and real errors.\\
+
+I believe there are arguments for both why you would want soundness or completeness in the tool and they both have tradeoffs. The decision whether to prefer one property over the other has to do with the tradeoff between \textit{sensitivity to vulnerabilities} in the apps and \textit{resources spent investigating} the vulnerabilities. Of course, another consideration is the quality of the tool (i.e. if we have the trivial sound tool that reports everything, or the trivial complete tool that reports nothing then these arguments don't  matter) but we will not worry about that and assume the tool has ``decent" quality. An argument for completeness is given as a footnote.\footnote{\textbf{Argument for completeness: } Consider a company which does not want to spend many resources finding vulnerabilities and does not mind too much not covering all the possible vulnerabilities. A complete tool provides no false positives and only true positives (though not all of them). Hence a complete tool provides \textbf{actionable information} that the company can use right away to locate vulnerabilities in the apps its promoting to its employees. Even though the tool might fail to report some vulnerabilities it will give information that the company does not need to further validate and hence spend resources on. This is in contrast to a sound tool that may provide a lot of false alarms, leaving the company with no immediately actionable information and no clear sense of where to start looking. Thus a complete tool suits well a company with low sensitivity for vulnerabilities who is not looking to spend too much finding vulnerabilities.}\\
+
+\noindent \textit{c) Theoretically, suppose a tool is both sound and complete. When the tool is used to analyze the following code that may contain a vulnerability, what property of the loop determines whether the tool will report an error?}
+\begin{verbatim}
+      int main()
+      { 
+        int x = 0;  
+        while ( x < 10 ) { /* loop while x is less than 10 */
+             ...  /* do some stuff that might change the value of x  */
+        }
+        ... /* do something insecure */;
+      }      
+\end{verbatim}
+\noindent (We assume the loop does not contain any insecure code)\\
+
+\noindent \textbf{Termination of the while loop (without exiting from main) on some possible path of execution: } A sound and complete tool will report an error \textit{if and only} if there is a vulnerability in the code. There is a vulnerability in the code \text{if and only if} the code after the while loop ever gets executed under some possible path of execution. This happens if and only if the loop terminates without exiting from main under some possible path of execution.
+
+%b) completeness, no false positives, soundness not actiobnable dont knwo where to strat, completeness provides actionable info, better use of resoucrs
