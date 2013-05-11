@@ -1,0 +1,12 @@
+README
+
+CS155 Project 2, Part 1 -- Web Attacks
+
+Diego Rafael Moreno Ferrer 
+rmferrer@cs.stanford.edu
+SUID#: 05490330
+
+
+Notes: 
+
+Attack B works with the original version of transfer.php which includes framebusting defense code.
