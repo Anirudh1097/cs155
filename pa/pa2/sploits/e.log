@@ -171,6 +171,7 @@ left to do:
 // TODO: dont create global vars
 // TODO: put global vars to avoid execution of event handlers twice
 // TODO: chane localhost to zoobar.stanford.edu
+// TODO: make AJAX call asynchronous?
 
 
 
