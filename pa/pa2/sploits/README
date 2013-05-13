@@ -9,4 +9,7 @@ SUID#: 05490330
 
 Notes: 
 
-Attack B works with the original version of transfer.php which includes framebusting defense code.
+- Attack B works with the original version of transfer.php which includes framebusting defense code.
+- Attack E works also if the user inputs his username/password incorrectly any number of times. The 
+  attack is robust enough to stick around until the user enters the correct username/password pair. 
+  Only then will the attack make the GET request to /credentials.php to steal the credentials.

