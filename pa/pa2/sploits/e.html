@@ -11,7 +11,7 @@
 
   <body>
 
-    <form id="loginform" name="loginform" method="POST" action="http://zoobar.stanford.edu/index.php">
+    <form id="loginform" name="loginform" method="POST">
       <input type="text" id="username_field" name="login_username" value="">
       <input type="password" name="login_password" value="">
       <input type="submit" name="submit_login" value="Log in">
@@ -20,7 +20,8 @@
     <script type="text/javascript">
     //<![CDATA[
       
-      var hostname = "localhost"; // "zoobar.stanford.edu";
+      var hostname = "localhost"; 
+      // var hostname = "zoobar.stanford.edu";
 
       var action = "http://" + hostname + "/index.php";
 
@@ -70,13 +71,14 @@
          "      if (!login_successful){ " +
          "         document.getElementsByTagName(\"h1\")[0].textContent = header_text; " +
          "         document.getElementsByTagName(\"h2\")[0].textContent = subheader_text; " +
+         "         document.getElementsByName(\"login_password\")[0].value = \"\";" +
          "         document.getElementsByClassName(\"footer\")[0].textContent = error_message; " +
          "         document.getElementsByClassName(\"footer\")[0]; warning.style.display = \"block\"; " +
          "         return false; " +
          "      } " +
          "   }; " +
          "} " + 
-         
+
          "onFocusEventProcessed = true;' ";
 
 
