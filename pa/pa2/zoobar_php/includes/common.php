@@ -8,8 +8,10 @@ require_once("navigation.php");
 
 // Allow users to use the back button without reposting data
 header ("Cache-Control: private");
-// header('X-Frame-Options: DENY');
-// TODO: leave this framebusting line here or into a separate file?
+
+// Don't allow pages that include this file to be displayed in a frame, regardless of origin
+header('X-Frame-Options: DENY');
+// TODO: is DENY neccessary or I am being to stringent? should it be SAMEORIGIN?
 
 // Init global variables
 $db = new Database("zoobar");

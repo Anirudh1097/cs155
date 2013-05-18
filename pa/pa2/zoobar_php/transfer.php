@@ -1,6 +1,5 @@
 <?php 
   require_once("includes/common.php"); 
-  require_once("includes/framebusting.php"); 
   nav_start_outer("Transfer");
   nav_start_inner();
   if($_POST['submission']) {
