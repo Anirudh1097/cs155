@@ -1,6 +1,7 @@
 <?php
 // login.php: Functions for checking auth and displaying login page
-
+  require_once("includes/framebusting.php"); 
+  
 // Return true on registration success, otherwise set $login_error
 function validate_registration(&$user) {
   global $login_error;
