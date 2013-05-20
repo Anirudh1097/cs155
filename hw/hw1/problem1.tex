@@ -3,7 +3,7 @@
 
 \noindent \textit{a) In x86 the stack grows downwards. Explain how a stack-based overflow attack would work if the stack grew upwards instead.}\\
 
-\noindent For upward growing stacks overflowing an insecure buffer in the current activation record\footnote{the activation record of the function being current	ly executed} will not generally result in a stack smashing attack since, at most, we will overwrite local variables but not any of the control data embedded in the stack (like saved eips,  ebps or arguments). \textbf{However, stack smashing attacks can be done in this architecture by overflowing a buffer in a previous activation record. }
+\noindent For upward growing stacks overflowing an insecure buffer in the current activation record\footnote{the activation record of the function being currently executed} will not generally result in a stack smashing attack since, at most, we will overwrite local variables but not any of the control data embedded in the stack (like saved eips,  ebps or arguments). \textbf{However, stack smashing attacks can be done in this architecture by overflowing a buffer in a previous activation record. }
 \begin{verbatim}
     Top of Stack / Top of Memory
                 .
