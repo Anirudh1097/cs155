@@ -2,7 +2,9 @@
   require_once("includes/common.php"); 
   nav_start_outer("Transfer");
   nav_start_inner();
-  if($_POST['submission']) {
+  $user_cookie = $_COOKIE[$user->cookieName];
+
+  if($_POST['submission'] && $_POST['token'] && $_POST['token'] == md5($user_cookie)) {
     $recipient = $_POST['recipient'];
     $zoobars = (int) $_POST['zoobars'];
     $sql = "SELECT Zoobars FROM Person WHERE PersonID=$user->id";
@@ -28,19 +30,13 @@
 ?>
 <p><b>Balance:</b>
 <span id="myZoobars"></span> zoobars</p>
-<form method=POST name=transferform
-  action="<?php echo $_SERVER['PHP_SELF']?>">
-<p>Send <input name=zoobars type=text value="<?php 
-  echo $_POST['zoobars']; 
-?>" size=5> zoobars</p>
-<p>to <input name=recipient type=text value="<?php 
-  echo $_POST['recipient']; 
-?>"></p>
-<input type=submit name=submission value="Send">
+<form method="POST" name="transferform" action="<?php echo $_SERVER['PHP_SELF'] ?>">
+<p>Send <input name="zoobars" type="text" value="<?php echo $_POST['zoobars']; ?>" size="5"> zoobars</p>
+<p>to <input name="recipient" type="text" value="<?php echo $_POST['recipient']; ?>"></p>
+<input type="submit" name="submission" value="Send">
+<input type="text" name="token" value="<?php echo md5($user_cookie); ?>" style="display:none">
 </form>
-<span class=warning><?php 
-  echo $result; 
-?></span>
+<span class="warning"><?php echo $result; ?></span>
 <?php 
   nav_end_inner();
 ?>
