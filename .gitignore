@@ -66,3 +66,6 @@
 *.tar.gz
 *submission
 *prev_submissions
+
+# Project 2 specific
+pa/pa2/zoobar_php/db/zoobar/Person.txt
