@@ -7,12 +7,11 @@
 <?php 
   $sql = "SELECT Zoobars FROM Person WHERE PersonID=$user->id";
   $rs = $db->executeQuery($sql);
-  $balance = $rs->getValueByNr(0,0);
+  $balance = (int)($rs->getValueByNr(0,0))
   echo $balance > 0 ? $balance : 0;
 ?> zoobars<br/>
 <b>Your profile:</b>
-<form method="POST" name=profileform
-  action="<?php echo $_SERVER['PHP_SELF']?>">
+<form method="POST" name="profileform" action="<?php echo $_SERVER['PHP_SELF']?>">
 <textarea name="profile_update">
 <?php
   if($_POST['profile_submit']) {  // Check for profile submission
@@ -26,7 +25,7 @@
   echo $rs->getValueByNr(0,0);  // Output the current profile
 ?>
 </textarea><br/>
-<input type=submit name="profile_submit" value="Save"></form>
+<input type="submit" name="profile_submit" value="Save"></form>
 <?php 
   nav_end_inner();
   nav_end_outer(); 
