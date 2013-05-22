@@ -7,4 +7,131 @@ rmferrer@cs.stanford.edu
 SUID#: 05490330
 
 
-Notes: 
+Changes: 
+
+NOTE: I took the approach of doing all sanatization of user input up front. i.e. whenever I 
+	  get HTTP request parameters that the application uses for SQL queries, to execute JS
+	  or to reflect back to the user in some way I immediately sanatize upon arrival. I do not
+	  do sanatization lazily where it happens at the moment of reflection/evaluation/storage.
+
+	  In all of the files I have touched I have put all the untrusted data / HTTP request parameters
+	  at the top of the files and done the up front sanatization there. 
+
+
+0. Quoting HTML attributes, casting integers, and adding character encoding
+
+	Description: 
+	I've gone through all files and put quotes around all HTML attributes. I also went through all
+	places where the code expects an integer and made an explicit cast to (int) (for example in the balance
+	computations in index.php I cast $balance to an int). Finally I added a character encoding meta tag
+	in the head section of all pages (in navigation.php) to avoid possibly exploitations of unspecified 
+	character encodings. These defenses by themselves do not beat any of the attacks but they are precautionary. 
+
+
+1. Sanatizing usernames. 
+
+	Description: 
+	We force all usernames in the system to only contain alphanumeric characters plus the 
+	characters "_" and "-".
+
+	Where: 
+	The main sanatization function "sanatize_username" is defined in includes/common.php. All places
+	that receive usernames as HTTP request parameters call this function. This includes users.php, 
+	login.php, and transfer.php.
+
+	Vulnerabilities fixed: attack A (reflected XSS and SQLi versions) and attack E (bypassed blacklist filter
+	version) are defeated. 
+
+	Changes in functionality: 
+	Users can no longer choose arbitary strings as usernames. Whenever a user tries to log in / register
+	with an invalid name the system will display a message saying that usernames must contain alphanumeric
+	chars. On every other instance where users input usernames (e.g. when searching for another user in 
+	users.php) the system simply strips out the invalid characters. 
+
+
+2. Removing eval from users.php
+
+	Description: 
+	Changed the eval call in users.php to a parseInt call since we expecto to read an int.
+
+	Where: 
+	The script element at the bottom of users.php 
+
+	Vulnerabilities fixed: eval version of attack E.
+
+	Changes in functionality: 
+	No change in user functionality.
+
+
+3. CSRF protection
+
+	Description: 
+	Added a secret hidden token to the transfer form. The secret token is the md5 hash of the user's cookie value.
+	Now attackers will not be able to do CSRF since they dont have the secret token and they can't guess it since
+	they need to know the users cookie. I also added code so that if a request to transfer.php is made without the
+	secret token then the server won't prefill the values of the form from the users input. This makes clickjacking
+	harder since the attacker will have to make the user enter all fields of the form, not just hit the send button.
+
+	Where: 
+	In the form in transfer.php
+
+	Vulnerabilities fixed: attack B. 
+
+	Changes in functionality: 
+	No change in user functionality.
+
+4. Framebusting
+
+	Description: 
+	Added X-Frame-Options: DENY header for all pages. This options when received by Firefox will 
+	tell the browser to not render a page if it is inside a frame. This will apply to all pages in 
+	the site. 
+
+	Where: 
+	In includes/common.php
+
+	Vulnerabilities fixed: attack C. 
+
+	Changes in functionality: 
+	No site can frame content from this site. 
+
+
+5. Sanatizing profiles.
+
+	Description:
+	All HTML markup is disallowed. Custom markup introduced. 
+
+	To prevent malicious profiles I have gotten rid of the old blacklist model and introduced a whitelist
+	approach. 
+
+	Profiles are not allowed to have any HTML tags. When receiving a user profile to be saved, the
+	system will first strip all HTML tags. If users want to add markup to their profiles they
+	have to do so throgh a custom markup specific to the application. The markup is simmple: it is almost
+	identical to HTML, except that start and closing tags are delimited by the '#*' characters instead of '<' 
+	and the '*#' characters instead of '>'. So for example to create the HTML equivalent of 
+	'<b>Hello</b> world<br/>' the user would have to input '#*b*# Hello #*/b*# world #*br/*#.' 
+	No HTML tag attributes are allowed. The only tags allowed are 'br', 'b', 'h1', 'h2', 'h3', 'h4', 
+	'i', 'li', 'ol', 'p', 'strong', 'table', 'tr', 'td', 'th', 'u', 'ul', 'em', 'span'. 
+
+	After stripping all HTML tags the user html encodes the profile to avoid SQLi (possible if we did not
+	encode quotes or backslashes) and stores it in the DB. 
+
+	When reflecting back the profile to the user is html decoded and all the custom markup is converted to the
+	equivalent HTML markup. 
+	
+	Where: 
+	The main sanatization functions are sanatize_profile and prepare_profile_for_output located in 
+	includes/common.php. sanatize_profile is called in index.php before doing the SQL query to update
+	the users profile. prepare_profile_for_output is called in users.php before reflecting the 
+	profile to the user. 
+	
+	Vulnerabilities fixed: attack D. stored XSS of profiles.
+
+	Changes in functionality: 
+	Users cannot use arbitrary markup in their profiles. If they want to markup their profiles they have to
+	use the custom markup defined above. This markup is slightly more restricted than the previous one since
+	it does not allow tag attributes and tags such as a and img are disallowed. 
+
+
+
+	

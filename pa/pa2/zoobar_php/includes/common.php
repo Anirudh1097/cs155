@@ -10,7 +10,7 @@ require_once("navigation.php");
 header ("Cache-Control: private");
 
 // Don't allow pages that include this file to be displayed in a frame, regardless of origin
-// header('X-Frame-Options: DENY');
+header('X-Frame-Options: DENY');
 
 // Init global variables
 $db = new Database("zoobar");
@@ -57,7 +57,7 @@ function prepare_profile_for_output ($profile) {
 	// parse our own markup and 'put back' HTML from markup
 	$allowed_tags = array('br', 'b', 'h1', 'h2', 'h3', 'h4', 'i', 'li', 'ol', 'p', 'strong', 'table', 'tr', 'td', 'th', 'u', 'ul', 'em', 'span');
 	foreach ($allowed_tags as $tag){
-		$regex1 = "/#" . $tag . "#/i"; $regex2 = "/#\/" . $tag . "#/i"; $regex3 = "/#" . $tag . "\/#/i";
+		$regex1 = "/#\*" . $tag . "\*#/i"; $regex2 = "/#\*\/" . $tag . "\*#/i"; $regex3 = "/#\*" . $tag . "\/\*#/i";
 		$subs1 = "<" . $tag . ">"; $subs2 = "</" . $tag . ">"; $subs3 = "<" . $tag . "/>"; 
 		$profile = preg_replace($regex1, $subs1, $profile);
 		$profile = preg_replace($regex2, $subs2, $profile);
