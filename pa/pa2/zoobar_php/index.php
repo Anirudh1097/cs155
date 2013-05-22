@@ -2,16 +2,18 @@
   require_once("includes/common.php"); 
   nav_start_outer("Home");
   nav_start_inner();
+
+  $php_self = $_SERVER['PHP_SELF'];
 ?>
 <b>Balance:</b> 
 <?php 
   $sql = "SELECT Zoobars FROM Person WHERE PersonID=$user->id";
   $rs = $db->executeQuery($sql);
-  $balance = (int)($rs->getValueByNr(0,0))
+  $balance = (int)($rs->getValueByNr(0,0));
   echo $balance > 0 ? $balance : 0;
 ?> zoobars<br/>
 <b>Your profile:</b>
-<form method="POST" name="profileform" action="<?php echo $_SERVER['PHP_SELF']?>">
+<form method="POST" name="profileform" action="<?php echo $php_self ?>">
 <textarea name="profile_update">
 <?php
   if($_POST['profile_submit']) {  // Check for profile submission

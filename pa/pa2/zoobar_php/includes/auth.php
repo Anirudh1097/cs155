@@ -73,7 +73,7 @@ class User {
       return;
     }
     $sql = "SELECT * FROM Person WHERE " .
-           "(Username = '$username') AND (Token = '$token')";
+           "(Username = '$username') AND (Token = '$token')"; // TODO: fix this SQLi vuln
     $rs = $this->db->executeQuery($sql);
     if ( $rs->next() ) {
       $this->id = $rs->getCurrentValueByName("PersonID");

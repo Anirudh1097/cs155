@@ -35,6 +35,10 @@
     }
     else $result = "Transfer to $recipient failed.";
   }
+  else if (!$form_token || $form_token != $secret_token)
+  {
+    $zoobars = null; $recipient = null;
+  }
 ?>
 <p><b>Balance:</b>
 <span id="myZoobars"></span> zoobars</p>

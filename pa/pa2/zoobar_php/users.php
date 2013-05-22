@@ -2,9 +2,13 @@
   require_once("includes/common.php"); 
   nav_start_outer("Users");
   nav_start_inner();
+
+  // Untrusted data
   $selecteduser = sanatize_username ($_GET['user']); // only allow innocuous characters
+  $php_self = $_SERVER['PHP_SELF']; 
+
 ?>
- <form name="profileform" method="GET" action="<?php echo $_SERVER['PHP_SELF']?>">
+ <form name="profileform" method="GET" action="<?php echo $php_self ?>">
  <nobr>User:
  <input type="text" name="user" value="<?php echo $selecteduser; ?>" size="10">
  <input type="submit" value="View"></nobr>
