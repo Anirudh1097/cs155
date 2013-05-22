@@ -11,7 +11,6 @@ header ("Cache-Control: private");
 
 // Don't allow pages that include this file to be displayed in a frame, regardless of origin
 header('X-Frame-Options: DENY');
-// TODO: is DENY neccessary or I am being to stringent? should it be SAMEORIGIN?
 
 // Init global variables
 $db = new Database("zoobar");
@@ -29,5 +28,16 @@ if(!validate_user($user)) {
   display_login();
   exit();
 }
+
+// This function takes a whitelist approach to filtering characters in 
+// usernames. It will take a username and only allow alphanumeric + {_ , -}
+// characters.
+function sanatize_username($username) {
+  if ( $username )
+    return ereg_replace("[^A-Za-z0-9_-]", "", $username);
+  else
+    return "";
+}
+
 
 ?>
