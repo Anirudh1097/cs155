@@ -16,7 +16,7 @@
     var myZoobars = <?php 
           $sql = "SELECT Zoobars FROM Person WHERE PersonID=$user->id";
           $rs = $db->executeQuery($sql);
-          $balance = $rs->getValueByNr(0,0);
+          $balance = (int)($rs->getValueByNr(0,0));
           echo $balance > 0 ? $balance : 0;
         ?>;
     var div = document.getElementById("myZoobars");
