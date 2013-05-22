@@ -1,0 +1,221 @@
+\documentclass[10pt]{article}
+
+%%%%%%%% Packages %%%%%%%%%%
+ \usepackage{fancyhdr}                 %%
+ \usepackage{amsmath}       % I think this gives me some symbols
+ \usepackage{amsthm}        % Does theorem stuff
+ \usepackage{amssymb}       % more symbols and fonts
+ \usepackage{bbm}           % for the nice blackboard bold 1
+ \usepackage{graphicx}
+ \usepackage[all]{xy}       % Include XY-pic
+    \SelectTips{cm}{10}     % Use the nicer arrowheads
+    \everyxy={<2.5em,0em>:} % Sets the scale I like
+%%%%%%%% Packages %%%%%%%%%%
+
+%%%%%%% Margins %%%%%%%%%%
+%\usepackage[margin=1.0in]{geometry}
+
+\addtolength{\oddsidemargin}{-1.305in}
+\addtolength{\evensidemargin}{-1.305in}
+\addtolength{\textwidth}{2.75in}
+
+\addtolength{\topmargin}{-.875in}
+\addtolength{\textheight}{1.75in}
+
+%%%%%%% End Margins %%%%%%%%
+
+%%%%%%% Pagestyle stuff %%%%%%%%%%%%%%%%%
+   \pagestyle{fancy}                   %%
+   \fancyhf{} %delete the current section for header and footer
+   \fancyhead[R]{\thepage}         %%
+   \fancyhead[C]{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Rafael Moreno Ferrer}
+   \fancyhead[L]{CS 155}     %%
+   \renewcommand{\headrulewidth}{0pt} % Remove header line.
+%%%%%%% End Pagestyle stuff %%%%%%%%%%%%%
+  
+ \title{
+    CS 155 \\
+    Homework 2
+ }
+ \author{
+        Rafael Moreno Ferrer \\ SUID\#: 05490330 \\
+ }
+ 
+ \date{}
+
+ \newtheorem{prob}{Problem}
+
+ \newenvironment{myindentpar}[1]%
+  {\begin{list}{}%
+         {\setlength{\leftmargin}{#1}}%
+         \item[]%
+ }
+ {\end{list}}
+  
+%%%%%%%%%%%%%%%% Rafael's Macros %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\e}{\epsilon}
+\newcommand{\s}{\sigma}
+\newcommand{\XXX}{\mathcal{X}}
+\newcommand{\YYY}{\mathcal{Y}}
+\newcommand{\fr}{\frac}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\U}{\cup}
+\newcommand{\bs}{\backslash}
+\newcommand{\sbs}{\subset}
+\newcommand{\FFF}{\mathcal{F}}
+\newcommand{\GGG}{\mathcal{G}}
+\newcommand{\AAA}{\mathcal{A}}
+\newcommand{\DDD}{\mathcal{D}}
+\newcommand{\w}{\omega}
+\newcommand{\W}{\Omega}
+\newcommand{\ex}{\exists}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\PPP}{\mathcal{P}}
+\newcommand{\RRR}{\mathcal{R}}
+\newcommand{\eset}{\emptyset}
+\newcommand{\sbsq}{\subseteq}
+\newcommand{\Ra}{\Rightarrow}
+\newcommand{\La}{\Leftarrow}
+\newcommand{\LRa}{\Leftrightarrow}
+\newcommand{\ul}{\underline}
+\newcommand{\ol}{\overline}
+\newcommand{\indicator}[1]{\mathbbm{1}_{ {#1} }}
+\newcommand{\ind}{\mathbbm{1}}
+\newcommand{\mbf}{\mathbf}
+\newcommand\pder[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\tr}{\mathrm{tr}}
+\newcommand{\bmbf}[1]{\bar{\mathbf{#1}}}
+\makeatletter
+\newcommand{\rmn}[1]{\romannumeral #1}
+\newcommand{\Rmn}[1]{\mathrm{\expandafter\@slowromancap\romannumeral #1@}}
+\makeatother
+\def\<{\langle}
+\def\>{\rangle}
+% \newcommand{\anton}[1]{[[\ensuremath{\bigstar\bigstar\bigstar} #1]]}
+% \renewcommand\1{\mathbbm{1}}
+% \renewcommand{\AA}{\mathbb{A}}
+% \newcommand\A{\mathcal{A}}
+% \DeclareMathOperator{\ab}{\sf Ab}
+% \newcommand{\alg}{\text{\sf Alg}}
+% \newcommand{\aff}{\text{\sf Aff}}
+% \DeclareMathOperator{\ann}{ann}
+% \DeclareMathOperator{\aut}{\underline{Aut}}
+% \DeclareMathOperator{\Aut}{Aut}
+% \newcommand{\B}{\mathcal{B}}
+% \def\b{\text{\sf B}}
+%% \newcommand{\bbar}[1]{\overline{#1}}
+% \newcommand{\bbar}[1]{\setbox0=\hbox{$#1$}\dimen0=.2\ht0 \kern\dimen0 \overline{\kern-\dimen0 #1}}
+% \DeclareMathOperator{\ber}{Ber}
+% \newcommand{\CC}{\mathbb{C}}
+% \newcommand{\C}{\mathcal{C}}
+% \newcommand{\cat}{\text{\sf Cat}}
+% \newcommand{\coh}{\text{\sf Coh}}
+% \DeclareMathOperator{\coker}{coker}
+% \newcommand{\csalg}{\text{\sf cSAlg}}
+% \newcommand{\D}{\mathcal{D}}
+% \newcommand\der[2]{\frac{d #1}{d #2}}
+% \newcommand{\e}{\varepsilon}
+% \DeclareMathOperator{\End}{\ensuremath{\mathcal{E}\kern-.125em\mathpzc{nd}}}
+% \newcommand{\E}{\mathcal{E}}
+% \newcommand\eft{\mathit{EFT}}
+% \newcommand{\F}{\mathcal{F}}
+% \newcommand{\FF}{\mathbb{F}}
+% \newcommand\fr{\text{\sf Fr}}
+% \newcommand\fun{\text{\sf Fun}}
+% \newcommand\fsalg{\text{\sf FSAlg}}
+% \newcommand{\g}{\mathfrak{g}}
+% \newcommand{\G}{\mathcal{G}}
+% \newcommand{\Ga}{\Gamma}
+% \newcommand{\ga}{\gamma}
+% \newcommand{\GG}{\mathbb{G}}
+% \newcommand{\gl}{\mathfrak{gl}}
+% \newcommand{\gpoid}{\text{\sf Gpoid}}
+% \newcommand\gring{\text{\sf GRing}}
+% \newcommand\gp{\text{\sf Gp}}
+% \newcommand\gvect{\text{\sf GVect}}
+% \renewcommand{\H}{\mathcal{H}} % old \H{x} is an x with a weird umlaut in text mode
+% \newcommand{\hhat}[1]{\widehat{#1}}
+% \let\hom\relax % kills the old hom, which is lowercase
+% \DeclareMathOperator{\hom}{Hom}
+% \DeclareMathOperator{\Hom}{\mathcal{H}\kern-.125em\mathpzc{om}}
+% \DeclareMathOperator{\HOM}{HOM}
+% \renewcommand{\labelitemi}{--}  % changes the default bullet in itemize
+% \newcommand{\I}{\mathcal{I}}
+% \DeclareMathOperator{\id}{id}
+% \DeclareMathOperator{\im}{im}
+% \DeclareMathOperator{\isom}{\underline{Isom}}
+% \newcommand{\J}{\mathcal{J}}
+% \newcommand{\K}{\mathcal{K}}
+% \renewcommand{\L}{\mathcal{L}}
+% \newcommand{\m}{\mathfrak{m}}
+% \newcommand{\M}{\mathcal{M}}
+% \newcommand\mat[1]{\bigl(\begin{smallmatrix} #1 \end{smallmatrix}\bigr)}
+% \newcommand\Mat[1]{\begin{pmatrix}#1\end{pmatrix}}
+% \newcommand\man{\text{\sf Man}}
+% \renewcommand\mod{\textrm{-\sf mod}}
+% \newcommand{\N}{\mathcal{N}}
+% \DeclareMathOperator{\nat}{Nat}
+% \DeclareMathOperator{\Nat}{NAT}
+% \renewcommand{\O}{\mathcal{O}}
+% \newcommand{\Om}{\Omega}
+% \newcommand{\p}{\mathfrak{p}}
+% \newcommand{\pb}{\rule{.4pt}{5.4pt}\rule[5pt]{5pt}{.4pt}\llap{$\cdot$\hspace{1pt}}}
+% \newcommand{\po}{\rule{5pt}{.4pt}\rule{.4pt}{5.4pt}\llap{$\cdot$\hspace{1pt}}}
+% \renewcommand{\P}{\mathcal{P}}
+% \newcommand{\PP}{\mathbb{P}}
+% \DeclareMathOperator{\proj}{Proj}
+% \DeclareMathOperator{\Proj}{\mathcal{P}\kern-.125em\mathpzc{roj}}
+% \newcommand{\qco}{\text{\sf Qcoh}}
+% \newcommand{\QQ}{\mathbb{Q}}
+% \newcommand{\qft}{\mathit{QFT}}
+% \DeclareMathOperator{\quot}{Quot}
+% \renewcommand{\r}{\mathfrak{r}} % old \r{x} is a little circle over x in text mode
+% \newcommand{\rmod}{\text{\sf mod-}}
+% \newcommand\rb{\text{\sf RB}}
+% \newcommand\riem{\text{\sf Riem}}
+% \newcommand{\RR}{\mathbb{R}}
+% \newcommand{\salg}{\text{\sf SAlg}}
+% \DeclareMathOperator{\sch}{\sf Sch}
+% \DeclareMathOperator{\sdim}{sdim}
+% \DeclareMathOperator{\set}{\sf Set}
+% \renewcommand{\setminus}{\smallsetminus}
+% \DeclareMathOperator{\sh}{\sf Sh}
+% \newcommand\slie{\text{\sf SLie}}
+% \newcommand{\sman}{\text{\sf SMan}}
+% \DeclareMathOperator{\spec}{Spec}
+% \DeclareMathOperator{\Spec}{\mathcal{S}\!\mathpzc{pec}}
+% \DeclareMathOperator{\spin}{Spin}
+% \DeclareMathOperator{\str}{str}
+% \DeclareMathOperator{\supp}{Supp}
+% \newcommand\svect{\text{\sf SVect}}
+% \DeclareMathOperator{\sym}{Sym}
+% \renewcommand\t{\tau}  % old \t is something to do with accents
+% \newcommand{\T}{\mathcal{T}}
+% \newcommand\tft{\mathit{TFT}}
+% \newcommand{\tmf}{\mathit{TMF}}
+% \renewcommand{\top}{\text{\sf Top}} % old \top is \mathchar"23E
+% \DeclareMathOperator{\topoi}{\sf Topoi}
+% \DeclareMathOperator{\tors}{\sf Tors}
+% \DeclareMathOperator{\tot}{Tot}
+% \DeclareMathOperator{\Tot}{\ensuremath{\mathpzc{Tot}}}
+% \DeclareMathOperator{\tr}{tr}
+% \newcommand{\TT}{\mathbb{T}}
+% \newcommand{\ttilde}[1]{\widetilde{#1}}
+% \newcommand{\udot}{\ensuremath{{\lower .183333em \hbox{\LARGE \kern -.05em$\cdot$}}}}
+% \newcommand{\uudot}{{\ensuremath{\!\mbox{\large $\cdot$}\!}}}
+% \DeclareMathOperator{\uhom}{\underline{Hom}}
+% \newcommand{\U}{\mathcal{U}}
+% \newcommand{\uC}{\underline{\C}}
+% \newcommand{\V}{\mathcal{V}}
+% \newcommand\vect{\text{\sf Vect}}
+% \newcommand\VV{\mathbb{V}}
+% \newcommand{\w}{\omega}
+% \newcommand{\W}{\mathcal{W}}
+% \newcommand{\X}{\mathcal{X}}
+% \newcommand{\Y}{\mathcal{Y}}
+% \newcommand{\Z}{\mathcal{Z}}
+% \newcommand{\ZZ}{\mathbb{Z}}
+%%%%%%%%%%%% End Rafael's Macros %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,0 +1,14 @@
+\begin{prob}  (WPAD) 
+\end{prob}
+
+\noindent WPAD is a protocol used by IE to automatically configure the browser's HTTP and HTTPS proxy settings. Before fetching its first page, IE will use DNS to locate a WPAD file, and if one is found, will use its contents to configure IE's proxy settings. If the network name for a computer is pc.cs.stanford.edu the WPAD protocol iteratively looks for wpad files at the following locations:
+
+\begin{verbatim}
+http://wpad.cs.stanford.edu/wpad.dat
+http://wpad.stanford.edu/wpad.dat
+http://wpad.edu/wpad.dat     (prior to 2005)
+\end{verbatim}
+
+\noindent \textit{a) Explain what capabilities were inadvertently given to the owner of the domain wpad.edu as a result of this protocol. Explain how personal information can be exposed as a result of this issue.}\\
+
+\noindent \textit{b) Are pages served over SSL protected from the problem you described? If so, explain why; if not, explain why not.}\\

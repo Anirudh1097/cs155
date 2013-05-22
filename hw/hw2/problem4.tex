@@ -1,0 +1,12 @@
+\begin{prob}  (CSRF Defenses) 
+\end{prob}
+
+\noindent \textit{a) In class we discussed Cross Site Request Forgery (CSRF) attacks against web sites that rely solely on cookies for session management. Briefly explain a CSRF attack on such a site}\\
+
+\noindent \textit{b) A common CSRF defense places a token in the DOM of every page (e.g. as a hidden form element) in addition to the cookie. An HTTP request is accepted by the server only if it contains both a valid HTTP cookie header and a valid token in the POST parameters. Why does this prevent the attack from part (a)?}\\
+
+\noindent \textit{c) One approach to choosing a CSRF token is to choose one at random. Suppose a web site chooses the token as a fresh random string for every HTTP response. The server checks that this random string is present in the next HTTP request for that session. Does this prevent CSRF attacks? If so, explain why. If not, describe an attack.}\\
+
+\noindent \textit{d) Another approach is to choose the token as a fixed random string chosen by the server. That is, the same random string is used as the CSRF token in all HTTP responses from the server over a given time period. You may assume that the time period is chosen carefully. Does this prevent CSRF attacks? If so, explain why. If not, describe an attack.}\\
+
+\noindent \textit{e) Why is the Same-Origin Policy important for the cookie-plus-token defense?}\\

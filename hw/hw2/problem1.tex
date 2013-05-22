@@ -1,0 +1,15 @@
+\begin{prob}  (HTTPS vs. Signatures)
+\end{prob}
+
+\noindent Suppose a software company widgets.com sells a product P and wants to distribute a software update D. The company wants to ensure that its clients only install software updates published by the company. They decide to use the following approach: The company places D on its web server and designs the software P to periodically check this server for updates over HTTPS.\\
+
+\noindent \textit{a) The company decides to buy a public key certificate for its web server from a reputable CA. Explain what checks P should apply to the server's certificate to defeat a network attacker. Is your design vulnerable to ssl strip?}\\
+
+\noindent \textit{b) How would you design the program P and the company's web server so that the update is secure against a network attacker, but there is no need to buy a certificate from a public CA? Your design should use an HTTPS web server as before.}\\
+
+\noindent \textit{c) Later on engineers at the company proposed the following very different design: Sign D using a widgets.com private key to obtain a signature s and then distribute (s,D) in the clear to all customers. The corresponding public key is embedded in the program P.}\\
+
+\textit{i) Later on engineers at the company proposed the following very different design: Sign D using a widgets.com private key\\\indent to obtain a signature s and then distribute (s,D) in the clear to all customers. The corresponding public key is embedded\\\indent in the program P.}\\
+
+\textit{ii) How much computing time does widgets.com web server spend doing crypto calculations in each of the designs? Which\\\indent is better?}\\
+

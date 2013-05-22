@@ -1,0 +1,13 @@
+\begin{prob}  (Stealth Port Scanning) 
+\end{prob}
+
+\noindent Recall that the IP packet header contains a 16-bit identification field that is used for assembling packet fragments. IP mandates that the identification field be unique for each packet for a given (SourceIP,DestIP) pair. A common method for implementing the identification field is to maintain a single counter that is incremented by one for every packet sent. The current value of the counter is embedded in each outgoing packet. Since this counter is used for all connections to the host we say that the host implements a global identification field.\\
+
+\noindent \textit{a) Suppose a host P (whom we'll call the Patsy for reasons that will become clear later) implements a global identification field. Suppose further that P responds to ICMP ping requests. You control some other host A. How can you test if P sent a packet to anyone (other than A) within a certain one minute window? You are allowed to send your own packets to P.}\\
+
+\noindent \textit{b) Your goal now is to test whether a victim host V is running a server that accepts connections to port n (that is, test if V is listening on port n). You wish to hide the identity of your machine A and therefore A cannot directly send a packet to V, unless that packet contains a spoofed source IP address. Explain how to use the patsy host P to test if V accepts connections to port n.\\
+Hint: Recall the following facts about TCP:\\
+-- A host that receives a SYN packet to an open port n sends back a SYN/ACK response to the source IP.\\
+-- A host that receives a SYN packet to a closed port n sends back a RST packet to the source IP.
+A host that receives a SYN/ACK packet that it is not expecting sends back a RST packet to the source IP.\\
+-- A host that receives a RST packet sends back no response. }\\

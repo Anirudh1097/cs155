@@ -1,0 +1,6 @@
+\begin{prob}  (Firewalls and Fragmentation)
+\end{prob}
+
+\noindent The IP protocol supports fragmentation, allowing a packet to be broken into smaller fragments as needed and re-assembled when it reaches the destination. When a packet is fragmented it is assigned a 16-bit packet ID and then each fragment is identified by its offset within the original packet. The fragments travel to the destination as separate packets. At the destination they are grouped by their packet ID and assembled into a complete packet using the packet offset of each fragment. Every fragment contains a one bit field called ``more fragments'' which is set to true if this is an intermediate fragment and set to false if this is the last fragment in the packet. We discussed the way small offsets can allow the data in one fragment to overlap information in the preceding fragment. However, overlapping fragments should not occur in normal network traffic.\\
+
+\textit{In class we mentioned that when fragments with overlapping segments are re-assembled at the destination, the results can vary from OS to OS. Give an example where this can cause a problem for a network-based packet filtering engine that blocks packets containing certain keywords. How should a filtering engine handle overlapping fragments to ensure that its filtering policy is not violated?}
