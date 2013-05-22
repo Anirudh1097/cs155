@@ -2,26 +2,21 @@
   require_once("includes/common.php"); 
   nav_start_outer("Users");
   nav_start_inner();
+  $selecteduser = sanatize_username ($_GET['user']); // only allow innocuous characters
 ?>
- <form name="profileform" method="GET"
-  action="<?php echo $_SERVER['PHP_SELF']?>">
+ <form name="profileform" method="GET" action="<?php echo $_SERVER['PHP_SELF']?>">
  <nobr>User:
- <input type="text" name="user" value="<?php 
-   // Beware: Stripping slashes is equivalent 
-   // to running PHP with magic_quotes_gpc off. 
-   echo stripslashes($_GET['user']); 
- ?>" size=10>
+ <input type="text" name="user" value="<?php echo $selecteduser; ?>" size="10">
  <input type="submit" value="View"></nobr>
 </form>
 <div id="profileheader"><!-- user data appears here --></div>
 <?php 
-  $selecteduser = $_GET['user']; 
   $sql = "SELECT Profile, Username, Zoobars FROM Person " . 
          "WHERE Username='$selecteduser'";
   $rs = $db->executeQuery($sql);
   if ( $rs->next() ) { // Sanitize and display profile
     list($profile, $username, $zoobars) = $rs->getCurrentValues();
-    echo "<div class=profilecontainer><b>Profile</b>";
+    echo "<div class='profilecontainer'><b>Profile</b>";
     $allowed_tags = 
       '<a><br><b><h1><h2><h3><h4><i><img><li><ol><p><strong><table>' .
       '<tr><td><th><u><ul><em><span>';
@@ -34,7 +29,7 @@
       'onMouseOver|onMouseUp|onMove|onReset|onResize|'.
       'onSelect|onSubmit|onUnload';
     $profile = preg_replace("/$disallowed/i", " ", $profile);
-    echo "<p id=profile>$profile</p></div>";
+    echo "<p id='profile'>$profile</p></div>";
   } else if($selecteduser) {  // user parameter present but user not found
     echo '<p class="warning" id="baduser">Cannot find that user.</p>';
   }
