@@ -5,6 +5,7 @@
 <HTML>
 <HEAD>
 <link rel="stylesheet" type="text/css" href="/static/zoobar.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <TITLE><?php echo "$page_title - " ?>Zoobar Foundation
 </TITLE>
 </HEAD>
