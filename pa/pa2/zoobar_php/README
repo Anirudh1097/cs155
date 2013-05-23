@@ -163,9 +163,7 @@ Changes:
 	it does not allow tag attributes and tags such as a and img are disallowed. 
 
 
-Other minor changes:
-
-7. Sanatizing cookie data
+7. Sanatizing session token data
   	
   	Description: 
 	I've sanatized session tokens in auth.php _checkRemembered. Session tokens are supposed to be alphanumeric 
@@ -181,7 +179,7 @@ Other minor changes:
 	No changes in site functionality.
 
 
-8. CSRF protection in profile forms
+8. CSRF protection for profile forms
 
 	Description: 
 	Added a secret hidden token to the profile update form. The secret token is the md5 hash of the user's cookie value.
