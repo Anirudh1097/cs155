@@ -72,8 +72,14 @@ class User {
     if (!$username or !$token) {
       return;
     }
+    
+    /* UNTRUSTED DATA SANITIZATION */
+    $username = sanatize_username ($username);
+    $token = sanatize_username ($token);
+    /* END UNTRUSTED DATA SANITIZATION */
+    
     $sql = "SELECT * FROM Person WHERE " .
-           "(Username = '$username') AND (Token = '$token')"; // TODO: fix this SQLi vuln
+           "(Username = '$username') AND (Token = '$token')";
     $rs = $this->db->executeQuery($sql);
     if ( $rs->next() ) {
       $this->id = $rs->getCurrentValueByName("PersonID");
