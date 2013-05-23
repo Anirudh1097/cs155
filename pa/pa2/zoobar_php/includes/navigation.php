@@ -10,20 +10,32 @@
 </TITLE>
 </HEAD>
 <div id="header">
+
 <div>Stanford CS155 Project 2</div>
 
-<form method="POST" action="/" name="logoutform" id="logoutform">
-  <input type="hidden" name="action" value="logout">
-  <input type="text" name="token" value="<?php echo $secret_token; ?>">
-  <input type="submit" value="Logout">
-</form>
-
-<div><a href="?action=logout"><?php 
+<?php
   global $user;
-  if($user->id) 
-    echo "Log out " . htmlspecialchars($user->username); 
-?></a></div>
+
+  if ($user->id){
+?>
+
+    <form method="POST" action="/" name="logoutform" id="logoutform" style="display:none;">
+      <input type="hidden" name="action" value="logout">
+      <input type="text" name="token" value="<?php echo $secret_token; ?>">
+      <input type="submit" value="Logout">
+    </form>
+
+    <div><a href="#" onclick="document.getElementById('logoutform').submit();">
+    <?php 
+        echo "Log out " . htmlspecialchars($user->username); 
+    ?>
+    </a></div>
+<?php
+  }
+?>
+
 </div>
+
 <?php
   // Pick a random title for the page. This is funny for about 3 seconds.
   srand();

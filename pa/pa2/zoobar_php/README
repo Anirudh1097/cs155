@@ -181,7 +181,7 @@ Other minor changes:
 	No changes in site functionality.
 
 
-8. CSRF protection in all forms
+8. CSRF protection in profile forms
 
 	Description: 
 	Added a secret hidden token to the profile update form. The secret token is the md5 hash of the user's cookie value.
@@ -195,3 +195,19 @@ Other minor changes:
 	Changes in functionality: 
 	No change in end user functionality. Just cannot make state changing POST requests to profile without having them
 	originate form the site.
+
+
+9. CSRF protection for logout
+
+	Description: 
+	Added a form to the layout with a hidden secret CSRF token. Changed "log out" link to submit this form on click. The 
+	secret token is the md5 hash of the user's cookie value. Now attackers will not be able to do CSRF for the logout. 
+
+	Where: 
+	Changes to auth.php, common.php, navigation.php.
+
+	Vulnerabilities fixed: CSRF for logout.
+
+	Changes in functionality: 
+	No change in end user functionality. Just cannot make logout requests without being on the site.
+
