@@ -58,7 +58,7 @@ function validate_user(&$user)
 
 function display_login()
 {
-  nav_start_outer("Login");
+  nav_start_outer("Login", "");
   $login_username = sanatize_username ($_POST['login_username']);
   $php_self = $_SERVER['PHP_SELF'];
 ?>

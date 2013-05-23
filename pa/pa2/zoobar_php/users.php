@@ -1,11 +1,14 @@
 <?php 
   require_once("includes/common.php"); 
-  nav_start_outer("Users");
+
+  global $php_self;
+  global $secret_token;
+
+  nav_start_outer("Users", $secret_token);
   nav_start_inner();
 
   /* UNTRUSTED DATA SANITIZATION */
   $selecteduser = sanatize_username ($_GET['user']); // only allow innocuous characters
-  $php_self = $_SERVER['PHP_SELF'];
   /* END UNTRUSTED DATA SANITIZATION */ 
 ?>
  <form name="profileform" method="GET" action="<?php echo $php_self ?>">

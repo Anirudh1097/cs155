@@ -62,6 +62,7 @@ class User {
 
   function _updateToken($token) {
     $arr = array($this->username, $token);
+    global $cookieData;
     $cookieData = base64_encode(serialize($arr));
     setcookie($this->cookieName, $cookieData, time() + 31104000);
   }

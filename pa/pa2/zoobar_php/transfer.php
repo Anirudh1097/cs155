@@ -1,17 +1,17 @@
 <?php 
   require_once("includes/common.php"); 
-  nav_start_outer("Transfer");
-  nav_start_inner();
 
+  global $php_self;
+  global $secret_token;
+  global $form_token;
+
+  nav_start_outer("Transfer", $secret_token);
+  nav_start_inner();
 
   /* UNTRUSTED DATA SANITIZATION */
   $recipient = sanatize_username ($_POST['recipient']); /* reflected & used in SQL query */
-  $user_cookie = $_COOKIE[$user->cookieName];
-  $secret_token = md5($user_cookie); /* CSRF token, reflected */
-  $form_token = $_POST['token']; /* not reflected or stored */
   $submission_status = $_POST['submission']; /* not reflected or stored */
   $zoobars = (int) $_POST['zoobars']; /* reflected, cast will sanatize */
-  $php_self = $_SERVER['PHP_SELF'];
   /* END UNTRUSTED DATA SANITIZATION */
 
   if($submission_status && $form_token && $form_token == $secret_token) {

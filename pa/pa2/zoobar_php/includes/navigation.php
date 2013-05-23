@@ -1,5 +1,5 @@
 <?php 
-  function nav_start_outer($page_title = null) { 
+  function nav_start_outer($page_title = null, $secret_token) { 
 ?><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3. org/TR/html4/loose.dtd">
 <HTML>
@@ -11,6 +11,13 @@
 </HEAD>
 <div id="header">
 <div>Stanford CS155 Project 2</div>
+
+<form method="POST" action="/" name="logoutform" id="logoutform">
+  <input type="hidden" name="action" value="logout">
+  <input type="text" name="token" value="<?php echo $secret_token; ?>">
+  <input type="submit" value="Logout">
+</form>
+
 <div><a href="?action=logout"><?php 
   global $user;
   if($user->id) 

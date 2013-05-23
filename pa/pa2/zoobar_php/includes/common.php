@@ -16,11 +16,25 @@ header('X-Frame-Options: DENY');
 $db = new Database("zoobar");
 $user = new User($db);
 
+
+
+global $php_self;
+global $form_token;
+global $secret_token; /* CSRF token */
+
+$php_self = $_SERVER['PHP_SELF'];
+$form_token = $_POST['token'];
+  
 // Check for logout and maybe display login page
-if($_GET['action'] == 'logout') { 
-  $user->_logout();
-  display_login();
-  exit();
+if ($_POST['action'] == 'logout') {
+  $user_cookie = $_COOKIE[$user->cookieName]; 
+  $secret_token = md5 ($user_cookie);
+
+  if ($form_token && $user_cookie && $form_token == $secret_token){
+    $user->_logout();
+    display_login();
+    exit();
+  }
 }
 
 // Validate user and maybe display login page
@@ -28,6 +42,13 @@ if(!validate_user($user)) {
   display_login();
   exit();
 }
+
+global $cookieData;
+
+$user_cookie = (!$_COOKIE[$user->cookieName] && $cookieData) ? $cookieData : $_COOKIE[$user->cookieName];
+$secret_token = md5 ($user_cookie);
+
+
 
 /* 
  * This function takes a whitelist approach to filtering characters in 

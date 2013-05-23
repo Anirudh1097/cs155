@@ -1,15 +1,16 @@
 <?php 
   require_once("includes/common.php"); 
-  nav_start_outer("Home");
+
+  global $php_self;
+  global $secret_token;
+  global $form_token;
+
+  nav_start_outer("Home", $secret_token);
   nav_start_inner();
 
   /* UNTRUSTED DATA SANITIZATION */  
-  $user_cookie = $_COOKIE[$user->cookieName];
-  $secret_token = md5($user_cookie); /* CSRF token, reflected */
-  $form_token = $_POST['token'];
   $profile_submit = $_POST['profile_submit'];
   $profile = sanatize_profile ($_POST['profile_update']);
-  $php_self = $_SERVER['PHP_SELF'];
   /* END UNTRUSTED DATA SANITIZATION */
 
 ?>
