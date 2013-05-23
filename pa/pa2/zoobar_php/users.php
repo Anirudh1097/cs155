@@ -3,10 +3,10 @@
   nav_start_outer("Users");
   nav_start_inner();
 
-  // Untrusted data
+  /* UNTRUSTED DATA SANITIZATION */
   $selecteduser = sanatize_username ($_GET['user']); // only allow innocuous characters
-  $php_self = $_SERVER['PHP_SELF']; 
-
+  $php_self = $_SERVER['PHP_SELF'];
+  /* END UNTRUSTED DATA SANITIZATION */ 
 ?>
  <form name="profileform" method="GET" action="<?php echo $php_self ?>">
  <nobr>User:
@@ -21,11 +21,12 @@
   if ( $rs->next() ) { // Sanitize and display profile
     list($profile, $username, $zoobars) = $rs->getCurrentValues();
     
-    // sanatize db contents before displaying them
+    /* UNTRUSTED DATA SANITIZATION */
     $zoobars = (int)$zoobars;
     $username = sanatize_username ($username);
     $profile = prepare_profile_for_output($profile);
-    
+    /* END UNTRUSTED DATA SANITIZATION */
+
     echo "<div class='profilecontainer'><b>Profile</b>";
     echo "<p id='profile'>$profile</p></div>";
   } else if($selecteduser) {  // user parameter present but user not found

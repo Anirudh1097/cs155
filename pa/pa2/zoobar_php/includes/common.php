@@ -29,9 +29,11 @@ if(!validate_user($user)) {
   exit();
 }
 
-// This function takes a whitelist approach to filtering characters in 
-// usernames. It will take a username and only allow alphanumeric + {_ , -}
-// characters.
+/* 
+ * This function takes a whitelist approach to filtering characters in 
+ * usernames. It will take a username and only allow alphanumeric + {_ , -}
+ * characters.
+ */
 function sanatize_username ($username) {
   if ( $username )
     return ereg_replace("[^A-Za-z0-9_-]", "", $username);
@@ -39,22 +41,38 @@ function sanatize_username ($username) {
     return "";
 }
 
+/*
+ * This function takes a profile and sanatizes it so that it can be safely stored
+ * in the DB. First it will strip all HTML tags (this is done to avoid stored XSS)
+ * and then it HTML encodes it to avoid SQLi. It is important to HTML encode the
+ * backslashes since if our profile ends in '\' then the end quote surrounding the
+ * profile value in the SQL statement would be escaped and bad things could happen. 
+ * i.e. if the SQL statement is UPDATE Person SET Profile='$profile' WHERE .... and 
+ * $person ends in a '\' then the ending quote surrounding $profile would be escaped. 
+ */ 
 function sanatize_profile ($profile) {
-	// dont allow any html markup. all markup needs to be done via our custom markup language
+	/* dont allow any html markup. all markup needs to be done via our custom markup language */
 	$profile = strip_tags($profile); 
 
+	/* HTML encode the profile. This makes sure quotes are escaped, so that it won't mess with the SQL statements. */
 	$profile = htmlspecialchars($profile, ENT_QUOTES, "UTF-8");
-
-	// HTML encode backslashes
+	/* Also HTML encode backslashes to cover the case where the string ends with a backslash and it messes with SQL statements. */
 	$profile = preg_replace("{\\\}", "&#92;", $profile);
 
 	return $profile;
 }
 
+/* 
+ * This function is called on a profile retrieved from the DB. Since 
+ * sanatize_profile gets rid of all the nasty stored XSS vulnerabilities all
+ * we need to do is HTML decode the profile and then parse the custom markup 
+ * and convert to HTML markup.
+ */
 function prepare_profile_for_output ($profile) {
+	/* decode the HTML encoding done in sanatize_profile */
 	$profile = htmlspecialchars_decode($profile, ENT_QUOTES);
 
-	// parse our own markup and 'put back' HTML from markup
+	/* parse our own markup and 'generate back' HTML from markup */
 	$allowed_tags = array('br', 'b', 'h1', 'h2', 'h3', 'h4', 'i', 'li', 'ol', 'p', 'strong', 'table', 'tr', 'td', 'th', 'u', 'ul', 'em', 'span');
 	foreach ($allowed_tags as $tag){
 		$regex1 = "/#\*" . $tag . "\*#/i"; $regex2 = "/#\*\/" . $tag . "\*#/i"; $regex3 = "/#\*" . $tag . "\/\*#/i";
