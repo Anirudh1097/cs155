@@ -195,7 +195,3 @@ Other minor changes:
 	Changes in functionality: 
 	No change in end user functionality. Just cannot make state changing POST requests to profile without having them
 	originate form the site.
-
-
-9. CSRF protection for logout
-	
