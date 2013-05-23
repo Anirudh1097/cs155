@@ -21,7 +21,7 @@
 
     <form method="POST" action="/" name="logoutform" id="logoutform" style="display:none;">
       <input type="hidden" name="action" value="logout">
-      <input type="text" name="token" value="<?php echo $secret_token; ?>">
+      <input type="hidden" name="token" value="<?php echo $secret_token; ?>">
       <input type="submit" value="Logout">
     </form>
 
