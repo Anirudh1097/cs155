@@ -4,15 +4,15 @@
   nav_start_inner();
 
 
-  // Untrusted data. Sanatize the data that is reflected or used in SQL statements
-  $recipient = sanatize_username ($_POST['recipient']); // reflected, used in SQL query
+  /* UNTRUSTED DATA SANITIZATION */
+  $recipient = sanatize_username ($_POST['recipient']); /* reflected & used in SQL query */
   $user_cookie = $_COOKIE[$user->cookieName];
-  $secret_token = md5($user_cookie); // reflected, md5 will return alphanumeric chars
-  $form_token = $_POST['token']; // not reflected or stored
-  $submission_status = $_POST['submission']; // not reflected or stored
-  $zoobars = (int) $_POST['zoobars']; // reflected, cast will sanatize
-  $php_self = $_SERVER['PHP_SELF']; // reflected TODO: sanatize?
-
+  $secret_token = md5($user_cookie); /* CSRF token, reflected */
+  $form_token = $_POST['token']; /* not reflected or stored */
+  $submission_status = $_POST['submission']; /* not reflected or stored */
+  $zoobars = (int) $_POST['zoobars']; /* reflected, cast will sanatize */
+  $php_self = $_SERVER['PHP_SELF'];
+  /* END UNTRUSTED DATA SANITIZATION */
 
   if($submission_status && $form_token && $form_token == $secret_token) {
     $sql = "SELECT Zoobars FROM Person WHERE PersonID=$user->id";
@@ -45,8 +45,8 @@
 <form method="POST" name="transferform" action="<?php echo $php_self; ?>">
 <p>Send <input name="zoobars" type="text" value="<?php echo $zoobars; ?>" size="5"> zoobars</p>
 <p>to <input name="recipient" type="text" value="<?php echo $recipient; ?>"></p>
+<input type="hidden" name="token" value="<?php echo $secret_token; ?>">
 <input type="submit" name="submission" value="Send">
-<input type="text" name="token" value="<?php echo $secret_token; ?>" style="display:none">
 </form>
 <span class="warning"><?php echo $result; ?></span>
 <?php 
