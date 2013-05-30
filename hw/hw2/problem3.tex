@@ -11,4 +11,18 @@ http://wpad.edu/wpad.dat     (prior to 2005)
 
 \noindent \textit{a) Explain what capabilities were inadvertently given to the owner of the domain wpad.edu as a result of this protocol. Explain how personal information can be exposed as a result of this issue.}\\
 
+\noindent The owner $A$ of the domain wpad.edu can create a file wpad.dat on its wpad.edu server which contains something like:
+\begin{verbatim}
+function FindProxyForURL(url, host){
+   return "PROXY <IP of a web server S under control of A>"
+}
+\end{verbatim}
+Now, in the case where a IE browser\footnote{IE is most vulnerable but also other browsers configure its web proxy settings using WPAD and are also vulnerable to this attack} in a computer pc.cs.stanford.edu has the setting to ``Automatically detect settings" on\footnote{which many IE browsers used to have enabled by default} it will look for these wpad.dat files to configure the web proxy settings. If it cannot locate the wpad.dat file on \textit{http://wpad.cs.stanford.edu/wpad.dat} and \textit{http://wpad.stanford.edu/wpad.dat} then it will find A's \textit{http://wpad.edu/wpad.dat} file. The above code will basically tell the browser to use the web server $S$ controlled by $A$ as a web proxy for all browser connections.  This will effectively give $A$ the capability to monitor (and even intercept/modify) through $S$ traffic between the browser and the end hosts the browser want to talk to. \textbf{Hence this scheme has effectively given $A$ the capability to become a man-in-the-middle or network attacker.} 
+
+If $A$ decides to stay a passive network attacker it is easy to imagine that $A$ could be able to see a lot of personal information belonging to the users it is monitoring who are surfing the web. Personal data like search queries in search engines (medically related are specially private) are sometimes transmitted over the clear. Additionally, there are a lot of websites that transmit sensitive data over the clear (some even credit card info!) that $A$ can learn along with the user's surfing history.
+
+If $A$ decides to tamper with the traffic and become an active network attacker it can also perform all the other man in the middle attacks like ssl-strip, injecting malicious javascript, XSS, CSRF, etc. if the situation permits (no encryption, serving resources on the clear for SSL pages, upgrading HTTP session to HTTPS, etc).\\
+
 \noindent \textit{b) Are pages served over SSL protected from the problem you described? If so, explain why; if not, explain why not.}\\
+
+\textbf{Yes, if and only if users browsers only connect to end hosts through HTTPS.} If a user browser $B$ only connects to an end host $H$ through HTTPS (as would happen if the HSTS header was successfully sent on first use from $H$ to $B$) then the attacker could not do any harm\footnote{if during connection setup the attacker wanted to mess with $H$'s certificate then $B$ would recognize the tampering when decrypting the certificate and would not initiate the connection. After receiving $H$'s certificate $B$ encrypts all of its traffic with $PK_H$ and then the shared symmetric key $k$. $A$ will not be able to see the traffic or tamper with it without being noticed since he does not have $SK_H$ (and hence cannot get $k$ either)}.  However, if $B$ connects to any page not over SSL, if it loads resources on a page that are not through HTTPS, or if $H$ at some midpoint tries to upgrade an HTTP connection to $B$ to an HTTPS connection then the attacker can perform any of the classic man in the middle attacks like ssl-strip, injecting malicious frames, Wachovia-type login attacks, and so on.
