@@ -5,9 +5,30 @@
 
 \noindent \textit{a) Suppose a host P (whom we'll call the Patsy for reasons that will become clear later) implements a global identification field. Suppose further that P responds to ICMP ping requests. You control some other host A. How can you test if P sent a packet to anyone (other than A) within a certain one minute window? You are allowed to send your own packets to P.}\\
 
+\noindent\textbf{Step 1: } Send an ICMP echo request from $A$ to $P$ at time $t=0$. $P$ will respond with an ICMP echo response packet and $A$ will remember the counter value $X$ in the identification field of the response.\\
+\noindent\textbf{Step 2: } At time $t=1min$ send another ICMP echo request from $A$ to $P$. $P$ will respond with an ICMP echo response and $A$ will remember the counter value $Y$ in the identification field of the response.\\
+\noindent\textbf{Step 3: } If $Y=X+1$ then we conclude that $P$ has not been talking to anyone else since it has incremented its global identification field just once during that minute for the 2nd ping response it gave us\footnote{we ignore the possibility of $Y$ wrapping around to $X+1$ since it would imply $P$ sent around $2^{16}$ packets in a minute which highly unlikely}. If $Y>X+1$ then we conclude that $P$ has sent a packet to someone other than $A$ during that minute since it incremented its counter once for the 2nd ping response to us and at least once for a packet it sent to someone else.\\
+ 
+
 \noindent \textit{b) Your goal now is to test whether a victim host V is running a server that accepts connections to port n (that is, test if V is listening on port n). You wish to hide the identity of your machine A and therefore A cannot directly send a packet to V, unless that packet contains a spoofed source IP address. Explain how to use the patsy host P to test if V accepts connections to port n.\\
 Hint: Recall the following facts about TCP:\\
 -- A host that receives a SYN packet to an open port n sends back a SYN/ACK response to the source IP.\\
 -- A host that receives a SYN packet to a closed port n sends back a RST packet to the source IP.
 A host that receives a SYN/ACK packet that it is not expecting sends back a RST packet to the source IP.\\
 -- A host that receives a RST packet sends back no response. }\\
+
+\noindent\textbf{Step 1: } Send an ICMP echo request from $A$ to $P$ at time $t=0$. $P$ will respond with an ICMP echo response packet and $A$ will remember the counter value $X$ in the identification field of the response.\\
+\noindent\textbf{Step 2: } Immediately after that at time $t=0$, have $A$ send a TCP SYN packet to $V$ with spoofed source address equal to $P$'s IP address and destination port equal to $n$.\\
+
+When $V$ gets the SYN packet two things can happen: 
+
+\textbf{a)} if $V$ is not listening on port $n$ then it will send a TCP RST packet destined to $P$. When $P$ receives this RST packet\\\indent from $V$ it will not respond with any packets. 
+
+\textbf{b)} if $V$ is listening on port $n$ it will respond to the SYN packet with a SYN/ACK packet destined to $P$. When $P$ receives\\\indent the SYN/ACK packet from $V$ it will send back to $V$ a RST packet since it was not expecting a SYN/ACK and finally $V$\\\indent will not respond to the RST. \\
+
+The differences between these two cases is that in \textbf{a)} $P$ does not send any packets to $V$ and in \textbf{b)} $P$ sends 1 packet to $V$.\\\indent Hence, now we can use our technique from part a) to detect which case holds. \\
+
+\noindent\textbf{Step 3: } At time $t=1min$ have $A$ send another ICMP echo request to $P$. $P$ will respond with an ICMP echo response and $A$ will remember the counter value $Y$ in the identification field of the response.\\
+\noindent\textbf{Step 4: } If $Y=X+1$ then we conclude that $P$ did not send a RST packet to $V$, hence did not receive a SYN/ACK from $V$ and hence that $V$ is not listening on port $n$. If $Y>X+1$ then we \textit{infer} that $P$ sent a RST packet to $V$, which implies $V$ sent a SYN/ACK to $P$, which in turn implies $V$ is listening on port $n$.\\
+
+Note that in this analysis we assume two things: 1) in a 1 minute interval $P$ will have received the SYN/ACK or RST packet that $V$ will send. This seems like a reasonable assumption. 2) in order to infer from $Y>X+1$ that $P$ sent a RST packet to $V$ we assume that at least one of the $Y-X-1$ packets sent from $P$ to hosts other than $A$ during that 1 minute was a RST packet to $V$. This is a reasonable assumption if we know $P$ does not get much traffic. In reality we would probably want to decrease the interval to decrease the chances of getting spurious traffic into $P$ and we would likely try this many times in order to filter out any spurious traffic into $P$.
