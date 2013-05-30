@@ -5,11 +5,51 @@
 
 \noindent \textit{a) The company decides to buy a public key certificate for its web server from a reputable CA. Explain what checks P should apply to the server's certificate to defeat a network attacker. Is your design vulnerable to ssl strip?}\\
 
+Let $S$ be the web server and $C$ be the reputable CA. In my design $P$ always makes sure that when it connects to $S$ it is always over SSL (HTTPS). This would be a hardcoded check in the source code for $P$. This idea is similar to the prepopulated HSTS databases that browsers ship with, which make sure that a browser will never connect to certain websites in the clear. As we saw in class, this design (along with the following checks on $S$'s certificate) defeats ssl-strip since the attack requires $P$ to accept communicating with $S$ over the clear. 
+
+Also in my design $P$ will ship with $C$'s public key baked in into its CA public key database. When $P$ gets $S$'s certificate $Cert$ in the Server-Hello HTTP response it will do the following: \\
+\indent1) Make sure $Cert$ is signed by a trusted CA (in this case $C$) and decrypt $Cert$ with $C$'s public key (baked into $P$)\\
+\indent2) Check certificate is not expired (see $Cert$'s expiry date)\\
+\indent3) Check certificate has not been revoked by a CRL\\
+\indent4) Check that the CommonName in $Cert$ matches the domain name of $S$\\
+If all of these checks pass then $P$ will go ahead and continue with the client-key-exchange phase of the HTTPS connection setup.\\
+
 \noindent \textit{b) How would you design the program P and the company's web server so that the update is secure against a network attacker, but there is no need to buy a certificate from a public CA? Your design should use an HTTPS web server as before.}\\
 
-\noindent \textit{c) Later on engineers at the company proposed the following very different design: Sign D using a widgets.com private key to obtain a signature s and then distribute (s,D) in the clear to all customers. The corresponding public key is embedded in the program P.}\\
+In this alternative design, the program $P$ is shipped with $S$'s public key $PK_S$ baked in into its CA public key database (and thus effectively considers $S$ to be a reputable CA). $S$ will create a self-signed certificate $Cert'$ with the same information $I_S$ as the certificate in part (a) (expiry date, CommonName for $S$, \textbf{$S$'s public key $PK_S$}, etc.) and self-sign it with its own private key $SK_S$ to produce $Cert' = E_{SK_S}(I_S)$\footnote{$E_{SK}$ denotes the encryption function using the secret key $SK$ and $D_{PK}$ denotes the inverse decryption function using the corresponding public key $PK$.}. The HTTPS setup protocol will then unfold as follows:\\
+\indent1) $P$ initiates a Client Hello message to $S$ ($P$ still is hardcoded to only open HTTPS connections to $S$)\\
+\indent2) $S$ responds with Server Hello message and its self-signed certificate $Cert' = E_{SK_S}(I_S)$\\
+\indent3) $P$ receives $Cert'$ and verifies that it came from a trusted CA, in this case $S$ (since $S$'s public key is baked in as a trusted CA public key). $P$ decrypts $Cert'$ with $PK_S$ to get $D_{PK_S}(Cert') = D_{PK_S}(E_{SK_S}(I_S)) = I_S$.\\
+\indent4) $P$ does the checks listed in part (a) and proceeds only if none fail. \\
+\indent5) $P$ generates a random key $k$, encrypts it with the public key it got from $I_S$ which happens to be $PK_S$ and sends $E_{PK_S}(k)$\\
+\indent6) $S$ receives the message and decrypts using its private key to get $D_{SK_S}(E_{PK_S}(k)) = k$.\\
+\indent7) Connection setup is successfully finished and both parties proceed to communicate using symmetric key crypto with shared key $k$. 
 
-\textit{i) Later on engineers at the company proposed the following very different design: Sign D using a widgets.com private key\\\indent to obtain a signature s and then distribute (s,D) in the clear to all customers. The corresponding public key is embedded\\\indent in the program P.}\\
+This approach is also secure against ssl-strip since $P$ is also hardcoded never to connect to $S$ unless its over HTTPS and defeats the network attacker since he cannot forge a trusted certificate since he does not possess $SK_S$.\\
 
-\textit{ii) How much computing time does widgets.com web server spend doing crypto calculations in each of the designs? Which\\\indent is better?}\\
+\noindent \textit{c) Later on engineers at the company proposed the following very different design: Sign D using a widgets.com private key to obtain a signature s and then distribute (s,D) in the clear to all customers. The corresponding public key is embedded in the program P. The following two questions compare this new design to the design used in part (a):}\\
+
+\textit{i) If we want to distribute the patch D using a content distribution network like BitTorent, which of the two designs should\\\indent we use? Explain why.}\\
+
+\noindent Let $PK_W$ and $SK_W$ be widget.com's public an private keys.\\
+
+\noindent \textbf{We should use the alternative design of distributing $(s, D) = (E_{SK_W}(D), D)$ and baking widgets.com public key $PK_W$ into $P$.}\\ 
+
+Notice that in this situation all we care about is \textbf{a)} that $P$ can be certain that the content $D$ was produced by widgets.com and \textbf{b)} to ensure the integrity of $D$. First, note that we get these two properties by distributing $(s, D)$ and having $P$ verify that they ``match". If $P$ received $(s', D')$, in order to verify $D'$ originated from widgets.com and has integrity it needs to decrypt $s'$ with $PK_W$ and check it matches $D'$ bit by bit. If $s' = E_{SK_W}(D')$ then 
+\[
+D_{PK_W}(s') = D_{PK_W}(E_{SK_W}(D')) = D'
+\]
+An attacker would not be able to produce a pair $(s', D')$ that matched since he does not possess $SK_W$, and if he corrupted $D'$ then the decryption of $s'$ would not match $D'$. Hence if $s' = E_{SK_W}(D')$ then with high probability $P$ can trust $D'$ came from widgets.com and has integrity. Therefore it must be the case that $D' = D$, i.e. $P$ got the original patch produced by widgets.com.
+
+Next, note that we care only about ascertaining the identity of the entity that \textit{produced} $D$ and not the identity of the entity that \textit{distributed} $D$, i.e. we do not care about who delivers $D$ to $P$ as long as the two conditions above are met. In particular we do not require that the parties that distribute and deliver $(s, D)$ to the end program be trusted. This is why a CDN of not necessarily trusted peers that transmits $(s, D)$ over the clear meets our needs. 
+
+The first approach is unnecessary here since if $P$ were to establish HTTPS connections to talk to the peers in the CDN then effectively we would be requiring some authentication of the peers to $P$. As we said we do not care who the distributors are as long as (a) and (b) above are met so we do not need to validate the identities of the peers. Not to mention the added practical disadvantages of using HTTPS  for communicating with the CDN: if we used the approach for part a) all peers would need to get certificates from a trusted CA which would be expensive, time consuming, and against the nature of peer to peer networks, and if we used the approach from part b) we would need to put all the public keys of the peers into $P$, which would defeat the flexibility of CDNs since we would need to know all trusted peers beforehand. Both of these cases would incur the costs of per-connection crypto computations (see next point).\\
+
+\textit{ii) List the most time consuming crypto operations that the widgets.com web server does in each of the two designs?\\\indent It suffices to only focus on pubic-key operations such as public-key encryption/decryption and digital signature generation\\\indent/verification. Which of the two designs is more efficient?}\\
+
+\noindent \textbf{The alternative design of distributing $(s, D)$ is more resource efficient. Basically in this approach there is a single expensive crypto operation being done offline while in the first approach there are crypto operations being incurred per every connection.}\\ 
+
+In the approach that distributes $(s, D)$ over the clear the most time consuming crypto operation being done by the widgets.com web server is that of \textbf{signing $D$ to produce $s = E_{SK_W}(D)$}. This cost is payed offline, upfront, and only once before the patch is distributed and never incurred again afterwards. 
+
+In contrast, in the HTTPS approach there is a lot more crypto work done. Since we are establishing encrypted connections between every instance of $P$ and the widgets.com web server we need to incur crypto operations per connection (which grows linearly with the number of downloads). In particular if we see the HTTP preamble/setup from part (b) we will see that in step 6 (client-key-exchange phase) $S$ receives an encrypted message $m = E_{PK_S}(k)$ containing the random symmetric key generated by $P$ and \textbf{$S$ has to perform $D_{SK_S}(m)$ to decrypt it}. This, in addition to the symmetric key crypto operations thereafter (and possibly self signing a certificate if we follow part (b)'s approach), is an expensive crypto operation being incurred by $S$ per connection. Hence the first approach is more efficient.
 
