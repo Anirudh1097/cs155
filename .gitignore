@@ -116,5 +116,5 @@ pa/pa2/zoobar_php/db/zoobar/Person.txt
 # Project 3 specific
 pa/pa3/workspace/.metadata
 pa/pa3/sandbox
-
+*.metadata
 
