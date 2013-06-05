@@ -1,0 +1,95 @@
+Rafael Moreno Ferrer
+SUNet ID: rmferrer
+SUNet ID#: 05490330
+
+CS155 Project 3, Part 2 -- Android app security: Reverse-engineering and privilege escalation
+
+Notes:
+
+	I am submitting a the entire directory for the EvilApp. This directory contains all the 
+	files I modified for this part of the assignment. For this assignment I only modified 
+	the following 3 files:
+
+		1) evilapp/src/com/cs155/trustedapp/IGetContactsString.aidl
+			Contains the interface definition for IGetContactsString in order
+			to allow inter-process communication between EvilApp and TrustedApp.
+
+		2) evilapp/src/com/cs155/evilapp/MainActivity.java
+			Contains the attack code using the secret key.
+		
+		3) evilapp/src/com/cs155/evilapp/MainActivity_no_key.java
+			Contains the generic attack code that does not rely on knowing the
+			secret key.
+
+
+Part 4 Questions:
+
+   	a) What should the developers of TrustedApp have done to make their app secure against the 
+   	   attack performed by EvilApp? 
+
+   		First of all they shoud fix the terrible bug I exploited for part 3. This bug is 
+   		located in the strcmp function in the ReadContactsService.java file. This function
+   		is meant to do what a regular string comparison function does: return true if the
+   		two input strings have the same length and every character is equal and false o/w. 
+
+   		The current implementation looks like:
+
+			private boolean strcmp(String paramString1, String paramString2)
+			{
+				for (int i = 0; ; i++)
+			    {
+			    	if ((i >= paramString1.length()) || (i >= paramString2.length()))
+			        	return true;
+			      	if (paramString1.charAt(i) != paramString2.charAt(i))
+			        	return false;
+			    }
+			}
+
+		Notice this function will quit the for-loop whenever it reaches the end of one of
+		the input strings and does not compare the remaining characters for the other string.
+		This is clearly wrong since two strings of unequals lenghts cannot be equal. 
+		Furthermore, given a fixed input paramString1 = secret this bug can be exploited by 
+		having paramString2 have length 1 and trying all invocations of the function on all 
+		possible 1-length strings. Clearly one invocation will return true (when we invoke it 
+		with paramString2 = the first character of 'secret'). Hence, we only need to try 
+		calling the service NUM_CHARS times until one password comparison succeeds and we get
+		access to the contacts.
+
+		To solve this bug I would use the String library function equals instead of using this 
+		custom strcmp function. One would need to change the safeRetrieveContacts in 
+		ReadContactsService.java to look like:
+
+			private String safeRetrieveContacts(String paramString)
+			{
+			    if (secret.equals(paramString))
+			    	return retrieveContacts();
+			    return "";
+			}
+
+		Alternatively, a correct version of the strcmp function looks like:
+
+		 	private boolean strcmp(String paramString1, String paramString2)
+			{
+			  	if (paramString1.length() != paramString2.length())
+			  		return false;	
+			  	
+			    for (int i = 0; i < paramString1.length(); i++)
+			    {
+			    	if (paramString1.charAt(i) != paramString2.charAt(i))
+			        	return false;
+			    }
+
+			    return true;
+			}
+
+		Another thing that could be done to make the TrustedApp more safe against the attack
+		is to obfuscate the code in TrustedApp (see answer to question b). The attack in EvilApp
+		relied on the capacity to reverse engineer the TrustedApp. With obfuscation reverse
+		engineering becomes much harder. 
+
+
+   	b) What are the real-world defenses against reverse-engineering an Android app?
+
+   		 
+
+
