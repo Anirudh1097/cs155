@@ -101,6 +101,7 @@ proguard/
 *sploit-ec
 
 *.tar.gz
+*.zip
 *submission
 *prev_submissions
 
