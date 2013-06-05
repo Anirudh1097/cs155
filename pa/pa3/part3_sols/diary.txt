@@ -1,0 +1,40 @@
+app_id = defc505d488e0a00ff92f7b0ac1c38c7
+code_t = 9469ea8ba22b4786f382986111518038
+secret = 4a95bad6eaa54d860c106fd1bd4db8ff
+secret = 4a95bad6eaa54d860c106fd1bd4db8ff
+
+	private String xorHexAppId(String secret, String appId) {
+		String result = "";
+		for (int i = 0; i < secret.length() && i < appId.length(); i+=2) {
+			int appIdHex = Integer.parseInt(appId.substring(i, i + 2), 16);
+			int secretHex = Integer.parseInt(secret.substring(i, i + 2), 16);
+			int res = appIdHex ^ secretHex;
+			result += String.format("%02x", res);
+		}
+		return new String(result);
+	}
+
+	xorHexAppId = function(secret, appId){
+		var result = "";
+
+		for (var i = 0; i < secret.length && i < appId.length; i += 2){
+			var appIdHex = parseInt(appId.substring(i, i + 2), 16);
+			var secretHex = parseInt(secret.substring(i, i + 2), 16);
+			var res = appIdHex ^ secretHex;
+			var hex = ("0" + res.toString(16)).substr(-2);
+			result += hex;
+		}
+	
+		return result;
+	}
+
+
+<a href="/click/b6d62b072b13a34f59f8dd135012cf17/d9ebc99899639557dae80c6d51bcd110">Click here to win $100,000,000!</a>
+
+String regex = '<a href="[a-zA-Z0-9\/]*">';
+
+Pattern pattern = Pattern.compile(regex);
+Matcher matcher = pattern.matcher(result);
+
+while (matcher.find())
+    System.out.println(matcher.group());
