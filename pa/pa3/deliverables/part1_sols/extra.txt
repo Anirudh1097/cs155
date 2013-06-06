@@ -1,0 +1,79 @@
+Interesting extra data:
+
+Alarms:
+
+	The user has vibrate-only alarms programmed at:
+
+	8:30 am,
+	9:00 am 
+
+	source: data/data/com.android.deskclock/databases/alarms.db
+
+Media -- Artists:
+
+	The user has albums by Dr. Mad in his media collection.
+
+	source: data/data/com.android.providers.media/databases/internal.db
+
+Browser Bookmarks:
+
+	The user has bookmarked the following sites in his browser.
+
+	(The following data is tab separated)
+
+	Title 	URL 
+
+	Google	http://www.google.com/
+	Picasa	http://picasaweb.google.com/
+	Yahoo!	http://www.yahoo.com/
+	MSN	http://www.msn.com/
+	Twitter	http://twitter.com/
+	Facebook	http://www.facebook.com/
+	Wikipedia	http://www.wikipedia.org/
+	eBay	http://www.ebay.com/
+	CNN	http://www.cnn.com/
+	NY Times	http://www.nytimes.com/
+	ESPN	http://espn.com/
+	Amazon	http://www.amazon.com/
+	Weather Channel	http://www.weather.com/
+	BBC	http://www.bbc.co.uk/
+	Electronic Frontier Foundation | Defending your rights in the digital world	https://www.eff.org/
+	bayareacodepinkaction - san francisco bay area code pink action list	https://lists.riseup.net/www/info/bayareacodepinkaction
+	Daily Kos :: News Community Action	http://m.dailykos.com/
+
+	Source: data/data/com.android.browser/databases/browser2.db
+
+
+Browser history:
+
+	The user has visited the following sites in the browser:
+
+	(The following data is tab separated)
+
+	Title	Url
+
+	Google	https://www.google.com/webhp?source=android-home
+	oklahoma gay rights - Google Search	https://www.google.com/search?source=android-home&site=webhp&source=hp&ei=lbadUYPdJqOtigLT2ICIDw&q=oklahoma+gay+rights&oq=oklahoma+gay+rights&gs_l=mobile-gws-hp.3..0j0i22i30l2.8669.13983.0.15910.20.18.0.1.1.0.369.2951.0j11j2j2.15.0...0.0...1c.1.14.mobile-gws-hp.4S8q0tdYeGU
+	LGBT rights in Oklahoma - Wikipedia	 the free encyclopedia
+	Supreme Court rulings could affect Oklahoma ban on gay marriage | NewsOK.com	http://m.newsok.com/supreme-court-rulings-could-affect-oklahoma-ban-on-gay-marriage/article/3771596
+	Electronic Frontier Foundation | Defending your rights in the digital world	https://www.eff.org/
+	http://riseup.net/	http://riseup.net/
+	home - help.riseup.net	https://help.riseup.net/en
+	lists.riseup.net	https://lists.riseup.net/www/
+	lists.riseup.net	https://lists.riseup.net/directory/tech/
+	criticalinternet - ë¹„íŒì  ì¸í„°ë„· ì—°êµ¬ì™€ ì •ë³´ìžë³¸ì£¼ì˜ ë¬¸í™” ë¹„íŒ	https://lists.riseup.net/www/info/criticalinternet
+	seattleprivacy - Seattle Privacy Coalition	https://lists.riseup.net/www/info/seattleprivacy
+	lists.riseup.net	https://lists.riseup.net/directory/student/
+	bayareacodepinkaction - san francisco bay area code pink action list	https://lists.riseup.net/www/info/bayareacodepinkaction
+	Daily Kos :: News Community Action	http://www.dailykos.com/
+
+	Source: data/data/com.android.browser/databases/browser2.db
+
+
+Cookies: 
+
+	Since the user's browser has a lot of cookies stored and there are many interesting attributes for 
+	cookies I am not putting them here, but I am including them in a cookies.csv file.
+
+	Source: data/data/com.android.browser/databases/webviewCookiesChromium.db
+	
