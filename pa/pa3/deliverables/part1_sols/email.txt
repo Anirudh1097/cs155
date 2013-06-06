@@ -1,6 +1,2 @@
 bman@army.mil
 jQ2Gt6TS
-
-smtp+ssl+://bman:jQ2Gt6TS:AUTOMATIC@mail.army.mil:465
-https://username:password@www.example.com/path
-smtp+ssl+://bman:jQ2Gt6TS:AUTOMATIC@mail.army.mil:465
