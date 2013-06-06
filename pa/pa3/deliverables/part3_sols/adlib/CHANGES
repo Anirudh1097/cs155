@@ -1,0 +1,106 @@
+Rafael Moreno Ferrer
+SUNet ID: rmferrer
+SUNet ID#: 05490330
+
+CS155 -- Project 3, Part 3.2 -- Click-fraud Defenses
+
+
+Assumptions: 
+
+	I came up with two approaches to defend against click fraud in Android Apps. 
+	Both approaches make the following assumptions: 
+
+		- The attacker controls a device and can put its own malicious apps that
+		  use the adlib library's .jar file to display ads.
+		- The adlib source files are obfuscated enough so that the attacker can't
+		  recover the SECRET by reverse engineering them.
+		- The attacker is also a network attacker, he can listen on the traffic 
+		  and potentially tamper it. 
+
+Protocol and problem:
+
+	The way the current adlib protocol works is:
+
+		0) The Adlib client and server both have a baked in SECRET that they share
+
+		1) Adlib client generates a HTTP GET to the URL adlib.mappend.net/token 
+		   with query parameter app_id = real_app_id XOR SECRET.
+
+		2) Adlib server does app_id XOR SECRET to get real_app_id of the app 
+		   that is requesting an ad. If the server recognizes the real_app_id then 
+		   responds with an HTML a tag that contains the ad text and a link/href to a 
+		   adlib.mappend.net/click URL that contains the real_app_id and some random string.
+		
+		3) When the user clicks on the link the app opens launches the browser and 
+		   opens that link with a GET Request
+		
+		4) Adlib server accepts the request if the user agent is a browser and the 
+		   header X-Requested-With: com.android.browser appears. It invalidates that 
+		   particular link after registering the click.
+
+	If an attacker were not be able to ever access/figure out the SECRET, then clickjacking 
+	would be harder since the attacker would not know how to produce tokens for Step 1 and hence
+	would not be able to get links from the server to 'click on'. 
+
+	However, getting the secret is easy if the attacker is able to listen on the network 
+	traffic, and he knows the protocol. By listening on the outgoing traffic the attacker can pick 
+	up real_app_id XOR SECRET (from the outgoing GET request the cient makes in Step 1), and 
+	real_app_id (in the HTTP OK response sent back by the server in Step 2). By computing:
+		
+		(real_app_id XOR SECRET) XOR real_app_id = SECRET
+
+	The attacker can get the secret and start forging fake adlib requests and start responding to 
+	them to generate clicks. 
+
+	Hence it is important to make sure the attacker cannot see the get. The problem is that the 
+	secret is easily reversible from the information transmitted in the clear. 
+
+
+Two defenses:
+
+	1) Using a non-reversible function of the SECRET to compute the token sent over 
+	   the network instead of the reversible XOR function.
+
+	   NOTE:
+	   	I WROTE CODE FOR THIS DEFENSE IN adlib/src/edu/stanford/cs/adlib/AdlibRequest.java
+	   	I HAVE PROVIDED A DIFF FILE WITH THE CHANGES I MADE IN THE / OF THE adlib FOLDER
+	   	CALLED AdlibRequest.diff.
+
+	   We transmit adlib protocol information in the clear with HTTP but the SECRET cannot be reversed 
+	   from the transmitted information. 
+
+	   One way to do this is: 
+	     - Every time the adlib client wants to generate the HTTP GET request in Step 1 to get the ad 
+	       HTML it generates a random nonce N, and computes 
+
+	       	h = SHA1(real_app_id : SECRET : N)
+
+	       Then in the GET request he sends N, real_app_id and h as query parameters, i.e. 
+
+	       	GET /token?app_id=<real_app_id>&nonce=<N>&digest=<h>
+
+	    - When the server gets the request he computes SHA1(real_app_id : SECRET : N) from the query 
+	      parameters (he knows SECRET) and compares it to the digest value in the request. If it matches
+	      then he responds with the ad HTML. 
+
+	    In this way the attacker won't be able to recover SECRET from the network traffic (the only query
+	    value that contains information about SECRET is the digest and SHA1 is computationally irreversible). 
+	    If he does not have SECRET he cannot forge adlib requests. 
+
+	    Of course this assumes he cannot get to SECRET by other means. He can probably attach a debugger to 
+	    the device and examine the adlib process state when computing the digest to get SECRET. I'm not
+	    sure how to deal with this. 
+
+	    Also if the network attacker is active then he can DoS the adlib libarary by corrupting the GET 
+	    requests from Step 1. 
+
+
+
+	2) Using HTTPS on the adlib connection. 
+		
+		Another approach is to preserve the old protocol and have the client only connect to the ad 
+		server using HTTPS. In the same way as the previous approach, this prevents the network attacker 
+		from being able to retrieve SECRET from the network traffic.
+
+		This however the advantage of needing crypto (SSL setup) in the client and server for every connectio.
+		The previous approach did not require encryption of the communication. 

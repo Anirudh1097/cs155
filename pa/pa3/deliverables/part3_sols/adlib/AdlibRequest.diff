@@ -1,0 +1,92 @@
+diff --git a/pa/pa3/apps/adlib/src/edu/stanford/cs/adlib/AdlibRequest.java b/pa/pa3/apps/adlib/src/edu/stanford/cs/adlib/AdlibRequest.java
+index 8a09ea2..cdd93b8 100644
+--- a/pa/pa3/apps/adlib/src/edu/stanford/cs/adlib/AdlibRequest.java
++++ b/pa/pa3/apps/adlib/src/edu/stanford/cs/adlib/AdlibRequest.java
+@@ -7,21 +7,67 @@ import java.util.Set;
+ import org.apache.http.client.methods.HttpGet;
+ import org.apache.http.client.methods.HttpUriRequest;
+ 
++import java.security.MessageDigest;
++import java.security.NoSuchAlgorithmException;
++import java.security.SecureRandom;
++import java.math.BigInteger;
++
++/* Class for computing random nonces for every adlib request */
++final class NonceGenerator
++{
++
++  private SecureRandom random = new SecureRandom();
++
++  public String newNonce()
++  {
++    return new BigInteger(130, random).toString(32);
++  }
++
++}
++
+ public class AdlibRequest {
+ 
+ 	private static final String SECRET = "fakesecretkey";
+ 	public final Set<String> keywords = new HashSet<String>();
++	private static final NonceGenerator generator = new NonceGenerator();
+ 	
+ 	public void addKeyword(String keyword) {
+ 		keywords.add(keyword);
+ 	}
++	
++	/* return the hex string version of the SHA1 digest of input*/
++	public static String SHA1(String input){
++		MessageDigest md;
++		
++		try {
++			md = MessageDigest.getInstance("SHA1");
++		} catch (NoSuchAlgorithmException e) {
++			return "";
++		}
++		
++        md.update(input.getBytes()); 
++     	byte[] hash = md.digest();
++     	
++     	StringBuffer hexString = new StringBuffer();
++
++        for (int i = 0; i < hash.length; i++) {
++        	if ((0xff & hash[i]) < 0x10) {
++        		hexString.append("0" + Integer.toHexString((0xFF & hash[i])));
++        	} else {
++        		hexString.append(Integer.toHexString(0xFF & hash[i]));
++        	}
++        }
++        
++     	return hexString.toString();
++	}
+ 
+ 	protected HttpUriRequest toHttpGet(String baseUrl, String appId) {
++		String nonce = generator.newNonce();
++		String digest = SHA1(appId + SECRET + nonce);
++		String url = baseUrl + "?keywords=" + this.keywordsToParamString() 
++					+ "&app_id=" + appId + "&nonce=" + nonce + "&digest=" + digest;
+ 		
+-		HttpGet request = new HttpGet(baseUrl + "?keywords=" +
+-										this.keywordsToParamString() +
+-										"&app_id=" +
+-										xorHexAppId(SECRET, appId));
++		HttpGet request = new HttpGet(url);
+ 		return request;
+ 	}
+ 	
+@@ -40,15 +86,4 @@ public class AdlibRequest {
+ 		return builder.toString();
+ 	}
+ 	
+-	private String xorHexAppId(String secret, String appId) {
+-		String result = "";
+-		for (int i = 0; i < secret.length() && i < appId.length(); i+=2) {
+-			int appIdHex = Integer.parseInt(appId.substring(i, i + 2), 16);
+-			int secretHex = Integer.parseInt(secret.substring(i, i + 2), 16);
+-			int res = appIdHex ^ secretHex;
+-			result += String.format("%02x", res);
+-		}
+-		return new String(result);
+-	}
+-	
+ }
