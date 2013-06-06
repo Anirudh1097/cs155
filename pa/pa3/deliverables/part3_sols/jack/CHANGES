@@ -1,0 +1,10 @@
+Rafael Moreno Ferrer
+SUNet ID: rmferrer
+SUNet ID#: 05490330
+
+CS155 -- Project 3, Part 3.1 -- Click-fraud Attack
+
+The only file I modified to mount the click-jacking attack is:
+
+	jack/src/edu/stanford/cs/jack/MainActivity.java
+	
