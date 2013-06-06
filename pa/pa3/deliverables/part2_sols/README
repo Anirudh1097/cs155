@@ -27,10 +27,61 @@ Part 4 Questions:
    	a) What should the developers of TrustedApp have done to make their app secure against the 
    	   attack performed by EvilApp? 
 
-   		First of all they shoud fix the terrible bug I exploited for part 3. This bug is 
-   		located in the strcmp function in the ReadContactsService.java file. This function
-   		is meant to do what a regular string comparison function does: return true if the
-   		two input strings have the same length and every character is equal and false o/w. 
+   		They can do two things:
+
+   		The better option...
+
+   		a) Get rid of the password authenticated access to the ReadContactService and instead
+   		   use the permissions system baked into the Android OS. 
+
+   		or... 
+
+   		b) If they still want use the current password authenticated access to the service at
+   		   least fix the bug in the strcmp function that is used to verify the password.
+
+
+   		Option a)
+
+   		Instead of using a password to grant access to the ReadContacts service it makes more 
+   		sense to use the Android OS permission system to avoid permission escalation. Using this
+   		mechianism we would only allow applications to call the ReadContactsService service on
+   		the TrustedApp if the calling application had the Android OS permission to read contacts. 
+   		(Of course then it wouldn't make sense for an app that already has access to the contacts 
+   		to use this service that all that does is retrieve the contacts)
+
+   		There is a way to tell the Android OS that all clients of a component (an activity, a service, 
+   		a broadcast) are required to have certain permissions to be able to use the component. 
+   		This is done by editing in the AndroidManifest.xml file for the TrustedApp and adding the 
+   		'android:permission="android.permission.READ_CONTACTS"' xml attribute to the ReadContactsService
+   		service component. The manifest file would then look something like this... 
+
+   		AndroidManifest.xml file for TrustedApp
+
+		<manifest . . . >
+		    <uses-permission android:name="android.permission.READ_CONTACTS" />
+		    <uses-permission android:name="android.permission.SEND_SMS" />
+		    . . .
+		    <application . . .>
+		        <activity android:name="com.cs155.trustedapp.MainActivity"
+		                  android:permission="com.example.project.DEBIT_ACCT"
+		                  . . . >
+		            . . .
+		        </activity>
+	----->      <service android:name="ReadContactsService" android:permission="android.permission.READ_CONTACTS">
+		        	<intent-filter>
+		    			<action android:name="com.cs155.trustedapp.ReadContactsService" />
+		    			. . .
+		    		</intent-filter>
+		            . . .
+		        </service>
+		    </application>
+		</manifest>
+
+
+   		Option b) 
+
+   		Fix the bug I exploited for part 3. This bug is located in the strcmp function in the 
+   		ReadContactsService.java file.  
 
    		The current implementation looks like:
 
@@ -47,7 +98,7 @@ Part 4 Questions:
 
 		Notice this function will quit the for-loop whenever it reaches the end of one of
 		the input strings and does not compare the remaining characters for the other string.
-		This is clearly wrong since two strings of unequals lenghts cannot be equal. 
+		This is clearly wrong since two strings of unequal lenghts cannot be equal. 
 		Furthermore, given a fixed input paramString1 = secret this bug can be exploited by 
 		having paramString2 have length 1 and trying all invocations of the function on all 
 		possible 1-length strings. Clearly one invocation will return true (when we invoke it 
@@ -90,6 +141,20 @@ Part 4 Questions:
 
    	b) What are the real-world defenses against reverse-engineering an Android app?
 
-   		 
+   		A way to defend against reverse-engineering is code-obfuscating. There are tools that do 
+   		this and there are even Android specific tools for code obfuscation. 
 
+   		Since Java applications are compiled to an intermediate format instead of machine code, for 
+   		portability, Android apps are susceptible to extraction. As we saw in the first part tools 
+   		like dex2jar, aapt, and JD-GUI allow us to decompile .apk files and get back (approximately)
+   		the source code for an application. 
 
+   		Tools like ProGuard (including in the Android Toolkit), when enabled, can modify the source
+   		code so that it is much harder to read. For example, DescriptiveClassName.descriptiveMethodName()” 
+   		is transformed to “A.b()”. To enable ProGuard simply uncomment the "proguard.config=" in the 
+   		project.properties file.
+
+   		There is another tool called DexGuard which is an android-specific version of ProGuard that 
+   		has more advanced features such as string encryption. 
+
+   			(source: http://www.techrepublic.com/blog/app-builder/protect-your-android-apps-with-obfuscation/1724)
